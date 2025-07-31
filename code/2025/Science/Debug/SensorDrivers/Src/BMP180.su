@@ -1,0 +1,5 @@
+../SensorDrivers/Src/BMP180.c:49:6:read_calib_data	24	static
+../SensorDrivers/Src/BMP180.c:69:10:get_ut	32	static
+../SensorDrivers/Src/BMP180.c:85:7:get_temp	16	static
+../SensorDrivers/Src/BMP180.c:100:10:get_up	32	static
+../SensorDrivers/Src/BMP180.c:116:6:get_press	16	static

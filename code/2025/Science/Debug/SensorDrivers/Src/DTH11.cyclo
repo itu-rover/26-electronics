@@ -1,0 +1,6 @@
+../SensorDrivers/Src/DTH11.c:6:6:Delay_us	2
+../SensorDrivers/Src/DTH11.c:16:6:Set_Pin_Output	1
+../SensorDrivers/Src/DTH11.c:26:6:Set_Pin_Input	1
+../SensorDrivers/Src/DTH11.c:34:6:DHT11_Start	1
+../SensorDrivers/Src/DTH11.c:44:9:DHT11_Check_Response	4
+../SensorDrivers/Src/DTH11.c:59:9:DHT11_Read_Byte	5
