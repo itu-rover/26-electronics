@@ -1,0 +1,6 @@
+../Core/Src/ethernetComHandler.c:18:6:parseData	24	static
+../Core/Src/ethernetComHandler.c:34:6:comProcessHandler	32	static
+../Core/Src/ethernetComHandler.c:61:6:drivetrain_motorCommand	16	static
+../Core/Src/ethernetComHandler.c:71:6:roboticarm_motorCommand	16	static
+../Core/Src/ethernetComHandler.c:76:6:science_motorCommand	16	static
+../Core/Src/ethernetComHandler.c:81:6:gnssData	16	static
