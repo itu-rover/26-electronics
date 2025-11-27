@@ -1,0 +1,6 @@
+../Core/Src/vesc_can_com.c:5:6:Int2HexArray	24	static
+../Core/Src/vesc_can_com.c:14:6:Int2HexArray_Pos	24	static
+../Core/Src/vesc_can_com.c:21:6:VESC_RUN_RPM	32	static
+../Core/Src/vesc_can_com.c:31:6:VESC_RUN_POS	32	static
+../Core/Src/vesc_can_com.c:43:6:VESC_RUN_HANDBRAKE	32	static
+../Core/Src/vesc_can_com.c:53:6:VESC_CAN_CB	72	static
