@@ -1,0 +1,3 @@
+[submodule "code/2026/vcu/vcu_embedded_kadir"]
+	path = code/2026/vcu/vcu_embedded_kadir
+	url = https://github.com/itu-rover/vcu_embedded_kadir.git
