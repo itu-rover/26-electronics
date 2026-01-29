@@ -1,0 +1,71 @@
+name: Submodule sync
+description: Periodically updates submodules to the latest release.
+
+on:
+  schedule:
+    - cron: "10/20 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: submodule-sync
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Submodule check
+    runs-on: ubuntu-slim
+    outputs:
+      submodules: ${{ steps.check.outputs.submodules }}
+
+    if: |
+      github.repository == 'itu-rover/26-electronics'
+      || github.event_name == 'workflow_dispatch'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup node
+      uses: actions/setup-node@v6
+      with:
+        node-version: 24
+
+    - name: Install dependencies
+      run: cd ci && npm install
+
+    - name: Check for updates
+      id: check
+      uses: actions/github-script@v8
+      with:
+        script: |
+          require("./ci/check-for-updates.js")(github, context, core)
+
+  update:
+    needs: check
+    runs-on: ubuntu-slim
+    permissions:
+      contents: write
+    strategy:
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.check.outputs.submodules) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Checkout submodule
+        run: |
+          git fetch origin
+          git checkout ${{ matrix.submodule.tagName }}
+        working-directory: ${{ matrix.submodule.path }}
+
+      - name: Commit update
+        run: |
+          git config --global user.name "itu-rover-ci[bot]"
+          git config --global user.email "258068897+itu-rover-ci[bot]@users.noreply.github.com"
+          git add ${{ matrix.submodule.path }}
+          git commit -m 'Update submodule "${{ matrix.submodule.path }}" to ${{ matrix.submodule.tagName }}
+          Revision: ${{ matrix.submodule.sha }}' \
+          && git push || echo "No changes to commit"

@@ -1,0 +1,8 @@
+{
+  "name": "ci",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "dependencies": {
+    "git-config": "^0.0.7"
+  }
+}
