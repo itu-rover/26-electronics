@@ -1,0 +1,219 @@
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//ccaspSDb.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"MQ135.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "SensorDrivers/Src/MQ135.c"
+  20              		.section	.text.Read_NH3,"ax",%progbits
+  21              		.align	1
+  22              		.global	Read_NH3
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	Read_NH3:
+  28              	.LFB130:
+   1:SensorDrivers/Src/MQ135.c **** /*
+   2:SensorDrivers/Src/MQ135.c ****  * Mq135.c
+   3:SensorDrivers/Src/MQ135.c ****  *
+   4:SensorDrivers/Src/MQ135.c ****  *  Created on: May 10, 2025
+   5:SensorDrivers/Src/MQ135.c ****  *      Author: ALPEREN
+   6:SensorDrivers/Src/MQ135.c ****  */
+   7:SensorDrivers/Src/MQ135.c **** 
+   8:SensorDrivers/Src/MQ135.c **** #include "MQ135.h"
+   9:SensorDrivers/Src/MQ135.c **** #include <math.h>
+  10:SensorDrivers/Src/MQ135.c **** 
+  11:SensorDrivers/Src/MQ135.c **** extern ADC_HandleTypeDef hadc3;
+  12:SensorDrivers/Src/MQ135.c **** 
+  13:SensorDrivers/Src/MQ135.c **** float Read_NH3 (){
+  29              		.loc 1 13 18 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 38B5     		push	{r3, r4, r5, lr}
+  34              		.cfi_def_cfa_offset 16
+  35              		.cfi_offset 3, -16
+  36              		.cfi_offset 4, -12
+  37              		.cfi_offset 5, -8
+  38              		.cfi_offset 14, -4
+  14:SensorDrivers/Src/MQ135.c **** 
+  15:SensorDrivers/Src/MQ135.c **** 	uint16_t ADC_Val;
+  39              		.loc 1 15 2 view .LVU1
+  16:SensorDrivers/Src/MQ135.c **** 	float  p, Vout, ppm, RS;
+  40              		.loc 1 16 2 view .LVU2
+  17:SensorDrivers/Src/MQ135.c **** 
+  18:SensorDrivers/Src/MQ135.c **** 	HAL_ADC_Start(&hadc3);
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//ccaspSDb.s 			page 2
+
+
+  41              		.loc 1 18 2 view .LVU3
+  42 0002 2D4C     		ldr	r4, .L3+24
+  43 0004 2046     		mov	r0, r4
+  44 0006 FFF7FEFF 		bl	HAL_ADC_Start
+  45              	.LVL0:
+  19:SensorDrivers/Src/MQ135.c **** 	HAL_ADC_PollForConversion(&hadc3, 200);
+  46              		.loc 1 19 2 view .LVU4
+  47 000a C821     		movs	r1, #200
+  48 000c 2046     		mov	r0, r4
+  49 000e FFF7FEFF 		bl	HAL_ADC_PollForConversion
+  50              	.LVL1:
+  20:SensorDrivers/Src/MQ135.c **** 	ADC_Val = HAL_ADC_GetValue(&hadc3);
+  51              		.loc 1 20 2 view .LVU5
+  52              		.loc 1 20 12 is_stmt 0 view .LVU6
+  53 0012 2046     		mov	r0, r4
+  54 0014 FFF7FEFF 		bl	HAL_ADC_GetValue
+  55              	.LVL2:
+  56 0018 0546     		mov	r5, r0
+  57              	.LVL3:
+  21:SensorDrivers/Src/MQ135.c **** 	HAL_ADC_Stop(&hadc3);
+  58              		.loc 1 21 2 is_stmt 1 view .LVU7
+  59 001a 2046     		mov	r0, r4
+  60 001c FFF7FEFF 		bl	HAL_ADC_Stop
+  61              	.LVL4:
+  22:SensorDrivers/Src/MQ135.c **** 
+  23:SensorDrivers/Src/MQ135.c **** 	Vout = ADC_Val * MQ135_ADC_VREF / MQ135_ADC_MAX_VALUE;
+  62              		.loc 1 23 2 view .LVU8
+  63              		.loc 1 23 17 is_stmt 0 view .LVU9
+  64 0020 ABB2     		uxth	r3, r5
+  65 0022 07EE903A 		vmov	s15, r3	@ int
+  66 0026 F8EEE77A 		vcvt.f32.s32	s15, s15
+  67 002a 9FED247A 		vldr.32	s14, .L3+28
+  68 002e 67EE877A 		vmul.f32	s15, s15, s14
+  69              		.loc 1 23 7 view .LVU10
+  70 0032 9FED236A 		vldr.32	s12, .L3+32
+  71 0036 C7EE866A 		vdiv.f32	s13, s15, s12
+  72              	.LVL5:
+  24:SensorDrivers/Src/MQ135.c **** 	RS = ((float)MQ135_ADC_VREF / Vout - 1) * MQ135_RL;
+  73              		.loc 1 24 2 is_stmt 1 view .LVU11
+  74              		.loc 1 24 30 is_stmt 0 view .LVU12
+  75 003a C7EE267A 		vdiv.f32	s15, s14, s13
+  76              		.loc 1 24 37 view .LVU13
+  77 003e B7EE007A 		vmov.f32	s14, #1.0e+0
+  78 0042 77EEC77A 		vsub.f32	s15, s15, s14
+  79              		.loc 1 24 5 view .LVU14
+  80 0046 9FED1F7A 		vldr.32	s14, .L3+36
+  81 004a 67EE877A 		vmul.f32	s15, s15, s14
+  82              	.LVL6:
+  25:SensorDrivers/Src/MQ135.c **** 
+  26:SensorDrivers/Src/MQ135.c **** 	p = -2.114 * (log10(RS/MQ135_R0) + 0.736);
+  83              		.loc 1 26 2 is_stmt 1 view .LVU15
+  84              		.loc 1 26 16 is_stmt 0 view .LVU16
+  85 004e 9FED1E7A 		vldr.32	s14, .L3+40
+  86 0052 C7EE877A 		vdiv.f32	s15, s15, s14
+  87              	.LVL7:
+  88              		.loc 1 26 16 view .LVU17
+  89 0056 17EE900A 		vmov	r0, s15
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//ccaspSDb.s 			page 3
+
+
+  90 005a FFF7FEFF 		bl	__aeabi_f2d
+  91              	.LVL8:
+  92              		.loc 1 26 16 view .LVU18
+  93 005e 41EC100B 		vmov	d0, r0, r1
+  94 0062 FFF7FEFF 		bl	log10
+  95              	.LVL9:
+  96 0066 51EC100B 		vmov	r0, r1, d0
+  97              		.loc 1 26 35 discriminator 1 view .LVU19
+  98 006a 0DA3     		adr	r3, .L3
+  99 006c D3E90023 		ldrd	r2, [r3]
+ 100 0070 FFF7FEFF 		bl	__aeabi_dadd
+ 101              	.LVL10:
+ 102              		.loc 1 26 13 discriminator 1 view .LVU20
+ 103 0074 0CA3     		adr	r3, .L3+8
+ 104 0076 D3E90023 		ldrd	r2, [r3]
+ 105 007a FFF7FEFF 		bl	__aeabi_dmul
+ 106              	.LVL11:
+ 107              		.loc 1 26 4 discriminator 1 view .LVU21
+ 108 007e FFF7FEFF 		bl	__aeabi_d2f
+ 109              	.LVL12:
+  27:SensorDrivers/Src/MQ135.c **** 	ppm = pow(10.0,p);
+ 110              		.loc 1 27 2 is_stmt 1 view .LVU22
+ 111              		.loc 1 27 8 is_stmt 0 view .LVU23
+ 112 0082 FFF7FEFF 		bl	__aeabi_f2d
+ 113              	.LVL13:
+ 114              		.loc 1 27 8 view .LVU24
+ 115 0086 41EC110B 		vmov	d1, r0, r1
+ 116 008a 9FED090B 		vldr.64	d0, .L3+16
+ 117 008e FFF7FEFF 		bl	pow
+ 118              	.LVL14:
+ 119 0092 51EC100B 		vmov	r0, r1, d0
+ 120              		.loc 1 27 6 discriminator 1 view .LVU25
+ 121 0096 FFF7FEFF 		bl	__aeabi_d2f
+ 122              	.LVL15:
+  28:SensorDrivers/Src/MQ135.c **** 
+  29:SensorDrivers/Src/MQ135.c **** 
+  30:SensorDrivers/Src/MQ135.c **** 
+  31:SensorDrivers/Src/MQ135.c **** 	return ppm;
+ 123              		.loc 1 31 2 is_stmt 1 view .LVU26
+  32:SensorDrivers/Src/MQ135.c **** }
+ 124              		.loc 1 32 1 is_stmt 0 view .LVU27
+ 125 009a 00EE100A 		vmov	s0, r0
+ 126 009e 38BD     		pop	{r3, r4, r5, pc}
+ 127              	.LVL16:
+ 128              	.L4:
+ 129              		.loc 1 32 1 view .LVU28
+ 130              		.align	3
+ 131              	.L3:
+ 132 00a0 5A643BDF 		.word	-549755814
+ 133 00a4 4F8DE73F 		.word	1072139599
+ 134 00a8 B6F3FDD4 		.word	-721554506
+ 135 00ac 78E900C0 		.word	-1073682056
+ 136 00b0 00000000 		.word	0
+ 137 00b4 00002440 		.word	1076101120
+ 138 00b8 00000000 		.word	hadc3
+ 139 00bc 33335340 		.word	1079194419
+ 140 00c0 00F07F45 		.word	1166012416
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//ccaspSDb.s 			page 4
+
+
+ 141 00c4 00401C46 		.word	1176256512
+ 142 00c8 66561746 		.word	1175934566
+ 143              		.cfi_endproc
+ 144              	.LFE130:
+ 146              		.text
+ 147              	.Letext0:
+ 148              		.file 2 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/machine/_defa
+ 149              		.file 3 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/sys/_stdint.h
+ 150              		.file 4 "Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f303xe.h"
+ 151              		.file 5 "Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f3xx.h"
+ 152              		.file 6 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_def.h"
+ 153              		.file 7 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dma.h"
+ 154              		.file 8 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc_ex.h"
+ 155              		.file 9 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc.h"
+ 156              		.file 10 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/math.h"
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//ccaspSDb.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 MQ135.c
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//ccaspSDb.s:21     .text.Read_NH3:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//ccaspSDb.s:27     .text.Read_NH3:00000000 Read_NH3
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//ccaspSDb.s:132    .text.Read_NH3:000000a0 $d
+
+UNDEFINED SYMBOLS
+HAL_ADC_Start
+HAL_ADC_PollForConversion
+HAL_ADC_GetValue
+HAL_ADC_Stop
+__aeabi_f2d
+log10
+__aeabi_dadd
+__aeabi_dmul
+__aeabi_d2f
+pow
+hadc3

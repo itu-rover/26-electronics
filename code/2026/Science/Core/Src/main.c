@@ -115,7 +115,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -149,13 +149,14 @@ int main(void)
   HAL_TIM_IC_Start_IT(&htim4, TIM_CHANNEL_1); // Rising edge
   HAL_TIM_IC_Start_IT(&htim4, TIM_CHANNEL_2); // Falling edge
 
-
+  //HAL_Delay(1000); // wait to pass unstable status of the sensors (DHT11)
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    //HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -178,12 +179,13 @@ int main(void)
 	  UT = get_ut();
 	  UP = get_up();
 	  temp = get_temp();
-	  press= get_press() * 10;
+	  press= get_press() * 10 * 50;
 
 	  snprintf(data_buff, sizeof(data_buff), "%f %f %f %f %f %u %ld",
 		CO2, NH3, CH4, NO2, DHT_temp, RhByteInt, press);
 
 	  HAL_UART_Transmit(&huart5, (uint8_t*)data_buff, strlen(data_buff), HAL_MAX_DELAY);
+	  HAL_UART_Transmit(&huart2, (uint8_t*)data_buff, strlen(data_buff), HAL_MAX_DELAY);
 
 	  HAL_Delay(1500);
 
@@ -597,7 +599,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 38400;
+  huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;

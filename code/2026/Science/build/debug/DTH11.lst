@@ -1,0 +1,572 @@
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"DTH11.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "SensorDrivers/Src/DTH11.c"
+  20              		.section	.text.Delay_us,"ax",%progbits
+  21              		.align	1
+  22              		.global	Delay_us
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	Delay_us:
+  28              	.LVL0:
+  29              	.LFB130:
+   1:SensorDrivers/Src/DTH11.c **** 
+   2:SensorDrivers/Src/DTH11.c **** #include "DTH11.h"
+   3:SensorDrivers/Src/DTH11.c **** 
+   4:SensorDrivers/Src/DTH11.c **** extern TIM_HandleTypeDef htim2;
+   5:SensorDrivers/Src/DTH11.c **** 
+   6:SensorDrivers/Src/DTH11.c **** void Delay_us(uint32_t us) {
+  30              		.loc 1 6 28 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 6 28 is_stmt 0 view .LVU1
+  35 0000 38B5     		push	{r3, r4, r5, lr}
+  36              		.cfi_def_cfa_offset 16
+  37              		.cfi_offset 3, -16
+  38              		.cfi_offset 4, -12
+  39              		.cfi_offset 5, -8
+  40              		.cfi_offset 14, -4
+  41 0002 0446     		mov	r4, r0
+   7:SensorDrivers/Src/DTH11.c **** 	HAL_TIM_Base_Start(&htim2);
+  42              		.loc 1 7 2 is_stmt 1 view .LVU2
+  43 0004 054D     		ldr	r5, .L4
+  44 0006 2846     		mov	r0, r5
+  45              	.LVL1:
+  46              		.loc 1 7 2 is_stmt 0 view .LVU3
+  47 0008 FFF7FEFF 		bl	HAL_TIM_Base_Start
+  48              	.LVL2:
+   8:SensorDrivers/Src/DTH11.c ****     uint32_t start = __HAL_TIM_GET_COUNTER(&htim2);  // Get current counter value
+  49              		.loc 1 8 5 is_stmt 1 view .LVU4
+  50              		.loc 1 8 22 is_stmt 0 view .LVU5
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 2
+
+
+  51 000c 2A68     		ldr	r2, [r5]
+  52              		.loc 1 8 14 view .LVU6
+  53 000e 516A     		ldr	r1, [r2, #36]
+  54              	.LVL3:
+   9:SensorDrivers/Src/DTH11.c **** 
+  10:SensorDrivers/Src/DTH11.c ****     while ((__HAL_TIM_GET_COUNTER(&htim2) - start) < us);  // Wait for required delay
+  55              		.loc 1 10 5 is_stmt 1 view .LVU7
+  56              	.L2:
+  57              		.loc 1 10 52 discriminator 1 view .LVU8
+  58              		.loc 1 10 13 is_stmt 0 discriminator 1 view .LVU9
+  59 0010 536A     		ldr	r3, [r2, #36]
+  60              		.loc 1 10 43 discriminator 1 view .LVU10
+  61 0012 5B1A     		subs	r3, r3, r1
+  62              		.loc 1 10 52 discriminator 1 view .LVU11
+  63 0014 A342     		cmp	r3, r4
+  64 0016 FBD3     		bcc	.L2
+  11:SensorDrivers/Src/DTH11.c **** }
+  65              		.loc 1 11 1 view .LVU12
+  66 0018 38BD     		pop	{r3, r4, r5, pc}
+  67              	.LVL4:
+  68              	.L5:
+  69              		.loc 1 11 1 view .LVU13
+  70 001a 00BF     		.align	2
+  71              	.L4:
+  72 001c 00000000 		.word	htim2
+  73              		.cfi_endproc
+  74              	.LFE130:
+  76              		.section	.text.Set_Pin_Output,"ax",%progbits
+  77              		.align	1
+  78              		.global	Set_Pin_Output
+  79              		.syntax unified
+  80              		.thumb
+  81              		.thumb_func
+  83              	Set_Pin_Output:
+  84              	.LVL5:
+  85              	.LFB131:
+  12:SensorDrivers/Src/DTH11.c **** 
+  13:SensorDrivers/Src/DTH11.c **** 
+  14:SensorDrivers/Src/DTH11.c **** 
+  15:SensorDrivers/Src/DTH11.c **** // Function to set pin as output
+  16:SensorDrivers/Src/DTH11.c **** void Set_Pin_Output(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin) {
+  86              		.loc 1 16 61 is_stmt 1 view -0
+  87              		.cfi_startproc
+  88              		@ args = 0, pretend = 0, frame = 24
+  89              		@ frame_needed = 0, uses_anonymous_args = 0
+  90              		.loc 1 16 61 is_stmt 0 view .LVU15
+  91 0000 00B5     		push	{lr}
+  92              		.cfi_def_cfa_offset 4
+  93              		.cfi_offset 14, -4
+  94 0002 87B0     		sub	sp, sp, #28
+  95              		.cfi_def_cfa_offset 32
+  17:SensorDrivers/Src/DTH11.c ****     GPIO_InitTypeDef GPIO_InitStruct = {0};
+  96              		.loc 1 17 5 is_stmt 1 view .LVU16
+  97              		.loc 1 17 22 is_stmt 0 view .LVU17
+  98 0004 01AB     		add	r3, sp, #4
+  99 0006 0022     		movs	r2, #0
+ 100 0008 0192     		str	r2, [sp, #4]
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 3
+
+
+ 101 000a 0292     		str	r2, [sp, #8]
+ 102 000c 0392     		str	r2, [sp, #12]
+ 103 000e 0492     		str	r2, [sp, #16]
+ 104 0010 0592     		str	r2, [sp, #20]
+  18:SensorDrivers/Src/DTH11.c ****     GPIO_InitStruct.Pin = GPIO_Pin;
+ 105              		.loc 1 18 5 is_stmt 1 view .LVU18
+ 106              		.loc 1 18 25 is_stmt 0 view .LVU19
+ 107 0012 0191     		str	r1, [sp, #4]
+  19:SensorDrivers/Src/DTH11.c ****     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 108              		.loc 1 19 5 is_stmt 1 view .LVU20
+ 109              		.loc 1 19 26 is_stmt 0 view .LVU21
+ 110 0014 0122     		movs	r2, #1
+ 111 0016 0292     		str	r2, [sp, #8]
+  20:SensorDrivers/Src/DTH11.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 112              		.loc 1 20 5 is_stmt 1 view .LVU22
+  21:SensorDrivers/Src/DTH11.c ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 113              		.loc 1 21 5 view .LVU23
+  22:SensorDrivers/Src/DTH11.c ****     HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
+ 114              		.loc 1 22 5 view .LVU24
+ 115 0018 1946     		mov	r1, r3
+ 116              	.LVL6:
+ 117              		.loc 1 22 5 is_stmt 0 view .LVU25
+ 118 001a FFF7FEFF 		bl	HAL_GPIO_Init
+ 119              	.LVL7:
+  23:SensorDrivers/Src/DTH11.c **** }
+ 120              		.loc 1 23 1 view .LVU26
+ 121 001e 07B0     		add	sp, sp, #28
+ 122              		.cfi_def_cfa_offset 4
+ 123              		@ sp needed
+ 124 0020 00BD     		pop	{pc}
+ 125              		.cfi_endproc
+ 126              	.LFE131:
+ 128              		.section	.text.Set_Pin_Input,"ax",%progbits
+ 129              		.align	1
+ 130              		.global	Set_Pin_Input
+ 131              		.syntax unified
+ 132              		.thumb
+ 133              		.thumb_func
+ 135              	Set_Pin_Input:
+ 136              	.LVL8:
+ 137              	.LFB132:
+  24:SensorDrivers/Src/DTH11.c **** 
+  25:SensorDrivers/Src/DTH11.c **** // Function to set pin as input
+  26:SensorDrivers/Src/DTH11.c **** void Set_Pin_Input(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin) {
+ 138              		.loc 1 26 60 is_stmt 1 view -0
+ 139              		.cfi_startproc
+ 140              		@ args = 0, pretend = 0, frame = 24
+ 141              		@ frame_needed = 0, uses_anonymous_args = 0
+ 142              		.loc 1 26 60 is_stmt 0 view .LVU28
+ 143 0000 00B5     		push	{lr}
+ 144              		.cfi_def_cfa_offset 4
+ 145              		.cfi_offset 14, -4
+ 146 0002 87B0     		sub	sp, sp, #28
+ 147              		.cfi_def_cfa_offset 32
+  27:SensorDrivers/Src/DTH11.c ****     GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 148              		.loc 1 27 5 is_stmt 1 view .LVU29
+ 149              		.loc 1 27 22 is_stmt 0 view .LVU30
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 4
+
+
+ 150 0004 01AB     		add	r3, sp, #4
+ 151 0006 0022     		movs	r2, #0
+ 152 0008 0192     		str	r2, [sp, #4]
+ 153 000a 0292     		str	r2, [sp, #8]
+ 154 000c 0392     		str	r2, [sp, #12]
+ 155 000e 0492     		str	r2, [sp, #16]
+ 156 0010 0592     		str	r2, [sp, #20]
+  28:SensorDrivers/Src/DTH11.c ****     GPIO_InitStruct.Pin = GPIO_Pin;
+ 157              		.loc 1 28 5 is_stmt 1 view .LVU31
+ 158              		.loc 1 28 25 is_stmt 0 view .LVU32
+ 159 0012 0191     		str	r1, [sp, #4]
+  29:SensorDrivers/Src/DTH11.c ****     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 160              		.loc 1 29 5 is_stmt 1 view .LVU33
+  30:SensorDrivers/Src/DTH11.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 161              		.loc 1 30 5 view .LVU34
+  31:SensorDrivers/Src/DTH11.c ****     HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
+ 162              		.loc 1 31 5 view .LVU35
+ 163 0014 1946     		mov	r1, r3
+ 164              	.LVL9:
+ 165              		.loc 1 31 5 is_stmt 0 view .LVU36
+ 166 0016 FFF7FEFF 		bl	HAL_GPIO_Init
+ 167              	.LVL10:
+  32:SensorDrivers/Src/DTH11.c **** }
+ 168              		.loc 1 32 1 view .LVU37
+ 169 001a 07B0     		add	sp, sp, #28
+ 170              		.cfi_def_cfa_offset 4
+ 171              		@ sp needed
+ 172 001c 00BD     		pop	{pc}
+ 173              		.cfi_endproc
+ 174              	.LFE132:
+ 176              		.section	.text.DHT11_Start,"ax",%progbits
+ 177              		.align	1
+ 178              		.global	DHT11_Start
+ 179              		.syntax unified
+ 180              		.thumb
+ 181              		.thumb_func
+ 183              	DHT11_Start:
+ 184              	.LFB133:
+  33:SensorDrivers/Src/DTH11.c **** 
+  34:SensorDrivers/Src/DTH11.c **** void DHT11_Start() {
+ 185              		.loc 1 34 20 is_stmt 1 view -0
+ 186              		.cfi_startproc
+ 187              		@ args = 0, pretend = 0, frame = 0
+ 188              		@ frame_needed = 0, uses_anonymous_args = 0
+ 189 0000 10B5     		push	{r4, lr}
+ 190              		.cfi_def_cfa_offset 8
+ 191              		.cfi_offset 4, -8
+ 192              		.cfi_offset 14, -4
+  35:SensorDrivers/Src/DTH11.c ****     Set_Pin_Output(DHT11_GPIO_PORT, DHT11_GPIO_PIN);
+ 193              		.loc 1 35 5 view .LVU39
+ 194 0002 0F4C     		ldr	r4, .L12
+ 195 0004 4FF48071 		mov	r1, #256
+ 196 0008 2046     		mov	r0, r4
+ 197 000a FFF7FEFF 		bl	Set_Pin_Output
+ 198              	.LVL11:
+  36:SensorDrivers/Src/DTH11.c ****     HAL_GPIO_WritePin(DHT11_GPIO_PORT, DHT11_GPIO_PIN, GPIO_PIN_RESET);
+ 199              		.loc 1 36 5 view .LVU40
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 5
+
+
+ 200 000e 0022     		movs	r2, #0
+ 201 0010 4FF48071 		mov	r1, #256
+ 202 0014 2046     		mov	r0, r4
+ 203 0016 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 204              	.LVL12:
+  37:SensorDrivers/Src/DTH11.c ****     HAL_Delay(18);
+ 205              		.loc 1 37 5 view .LVU41
+ 206 001a 1220     		movs	r0, #18
+ 207 001c FFF7FEFF 		bl	HAL_Delay
+ 208              	.LVL13:
+  38:SensorDrivers/Src/DTH11.c ****     HAL_GPIO_WritePin(DHT11_GPIO_PORT, DHT11_GPIO_PIN, GPIO_PIN_SET);
+ 209              		.loc 1 38 5 view .LVU42
+ 210 0020 0122     		movs	r2, #1
+ 211 0022 4FF48071 		mov	r1, #256
+ 212 0026 2046     		mov	r0, r4
+ 213 0028 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 214              	.LVL14:
+  39:SensorDrivers/Src/DTH11.c ****     Delay_us(40);
+ 215              		.loc 1 39 5 view .LVU43
+ 216 002c 2820     		movs	r0, #40
+ 217 002e FFF7FEFF 		bl	Delay_us
+ 218              	.LVL15:
+  40:SensorDrivers/Src/DTH11.c ****     Set_Pin_Input(DHT11_GPIO_PORT, DHT11_GPIO_PIN);
+ 219              		.loc 1 40 5 view .LVU44
+ 220 0032 4FF48071 		mov	r1, #256
+ 221 0036 2046     		mov	r0, r4
+ 222 0038 FFF7FEFF 		bl	Set_Pin_Input
+ 223              	.LVL16:
+  41:SensorDrivers/Src/DTH11.c **** }
+ 224              		.loc 1 41 1 is_stmt 0 view .LVU45
+ 225 003c 10BD     		pop	{r4, pc}
+ 226              	.L13:
+ 227 003e 00BF     		.align	2
+ 228              	.L12:
+ 229 0040 00080048 		.word	1207961600
+ 230              		.cfi_endproc
+ 231              	.LFE133:
+ 233              		.section	.text.DHT11_Check_Response,"ax",%progbits
+ 234              		.align	1
+ 235              		.global	DHT11_Check_Response
+ 236              		.syntax unified
+ 237              		.thumb
+ 238              		.thumb_func
+ 240              	DHT11_Check_Response:
+ 241              	.LFB134:
+  42:SensorDrivers/Src/DTH11.c **** 
+  43:SensorDrivers/Src/DTH11.c **** // Function to check DHT11 response
+  44:SensorDrivers/Src/DTH11.c **** uint8_t DHT11_Check_Response() {
+ 242              		.loc 1 44 32 is_stmt 1 view -0
+ 243              		.cfi_startproc
+ 244              		@ args = 0, pretend = 0, frame = 0
+ 245              		@ frame_needed = 0, uses_anonymous_args = 0
+ 246 0000 10B5     		push	{r4, lr}
+ 247              		.cfi_def_cfa_offset 8
+ 248              		.cfi_offset 4, -8
+ 249              		.cfi_offset 14, -4
+  45:SensorDrivers/Src/DTH11.c ****     uint8_t Response = 0;
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 6
+
+
+ 250              		.loc 1 45 5 view .LVU47
+ 251              	.LVL17:
+  46:SensorDrivers/Src/DTH11.c ****     Delay_us(40);			//we are in the middle of 80 us low
+ 252              		.loc 1 46 5 view .LVU48
+ 253 0002 2820     		movs	r0, #40
+ 254 0004 FFF7FEFF 		bl	Delay_us
+ 255              	.LVL18:
+  47:SensorDrivers/Src/DTH11.c **** 
+  48:SensorDrivers/Src/DTH11.c ****     if (HAL_GPIO_ReadPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN) == 0) {
+ 256              		.loc 1 48 5 view .LVU49
+ 257              		.loc 1 48 9 is_stmt 0 view .LVU50
+ 258 0008 4FF48071 		mov	r1, #256
+ 259 000c 0D48     		ldr	r0, .L20
+ 260 000e FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 261              	.LVL19:
+ 262              		.loc 1 48 8 discriminator 1 view .LVU51
+ 263 0012 50B1     		cbz	r0, .L19
+  45:SensorDrivers/Src/DTH11.c ****     Delay_us(40);			//we are in the middle of 80 us low
+ 264              		.loc 1 45 13 view .LVU52
+ 265 0014 0023     		movs	r3, #0
+ 266 0016 1C46     		mov	r4, r3
+ 267              	.LVL20:
+ 268              	.L16:
+  49:SensorDrivers/Src/DTH11.c ****         Delay_us(80);       //we are in the middle of 80 us high
+  50:SensorDrivers/Src/DTH11.c ****         if (HAL_GPIO_ReadPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN) == 1) Response = 1;
+  51:SensorDrivers/Src/DTH11.c ****         else Response = 0;
+  52:SensorDrivers/Src/DTH11.c ****     }
+  53:SensorDrivers/Src/DTH11.c **** 
+  54:SensorDrivers/Src/DTH11.c ****     while ((HAL_GPIO_ReadPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN)));	//wait for low
+ 269              		.loc 1 54 12 is_stmt 1 discriminator 2 view .LVU53
+ 270              		.loc 1 54 13 is_stmt 0 discriminator 2 view .LVU54
+ 271 0018 4FF48071 		mov	r1, #256
+ 272 001c 0948     		ldr	r0, .L20
+ 273 001e FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 274              	.LVL21:
+ 275              		.loc 1 54 12 discriminator 2 view .LVU55
+ 276 0022 0028     		cmp	r0, #0
+ 277 0024 F8D1     		bne	.L16
+  55:SensorDrivers/Src/DTH11.c ****     return Response;
+ 278              		.loc 1 55 5 is_stmt 1 view .LVU56
+  56:SensorDrivers/Src/DTH11.c **** }
+ 279              		.loc 1 56 1 is_stmt 0 view .LVU57
+ 280 0026 2046     		mov	r0, r4
+ 281 0028 10BD     		pop	{r4, pc}
+ 282              	.LVL22:
+ 283              	.L19:
+ 284              		.loc 1 56 1 view .LVU58
+ 285 002a 0446     		mov	r4, r0
+  49:SensorDrivers/Src/DTH11.c ****         Delay_us(80);       //we are in the middle of 80 us high
+ 286              		.loc 1 49 9 is_stmt 1 view .LVU59
+ 287 002c 5020     		movs	r0, #80
+ 288 002e FFF7FEFF 		bl	Delay_us
+ 289              	.LVL23:
+  50:SensorDrivers/Src/DTH11.c ****         else Response = 0;
+ 290              		.loc 1 50 9 view .LVU60
+  50:SensorDrivers/Src/DTH11.c ****         else Response = 0;
+ 291              		.loc 1 50 13 is_stmt 0 view .LVU61
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 7
+
+
+ 292 0032 4FF48071 		mov	r1, #256
+ 293 0036 0348     		ldr	r0, .L20
+ 294 0038 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 295              	.LVL24:
+  50:SensorDrivers/Src/DTH11.c ****         else Response = 0;
+ 296              		.loc 1 50 12 discriminator 1 view .LVU62
+ 297 003c 0128     		cmp	r0, #1
+ 298 003e EBD1     		bne	.L16
+  50:SensorDrivers/Src/DTH11.c ****         else Response = 0;
+ 299              		.loc 1 50 78 discriminator 2 view .LVU63
+ 300 0040 0446     		mov	r4, r0
+ 301 0042 E9E7     		b	.L16
+ 302              	.L21:
+ 303              		.align	2
+ 304              	.L20:
+ 305 0044 00080048 		.word	1207961600
+ 306              		.cfi_endproc
+ 307              	.LFE134:
+ 309              		.section	.text.DHT11_Read_Byte,"ax",%progbits
+ 310              		.align	1
+ 311              		.global	DHT11_Read_Byte
+ 312              		.syntax unified
+ 313              		.thumb
+ 314              		.thumb_func
+ 316              	DHT11_Read_Byte:
+ 317              	.LFB135:
+  57:SensorDrivers/Src/DTH11.c **** 
+  58:SensorDrivers/Src/DTH11.c **** // Function to read a single byte
+  59:SensorDrivers/Src/DTH11.c **** uint8_t DHT11_Read_Byte() {
+ 318              		.loc 1 59 27 is_stmt 1 view -0
+ 319              		.cfi_startproc
+ 320              		@ args = 0, pretend = 0, frame = 0
+ 321              		@ frame_needed = 0, uses_anonymous_args = 0
+ 322 0000 38B5     		push	{r3, r4, r5, lr}
+ 323              		.cfi_def_cfa_offset 16
+ 324              		.cfi_offset 3, -16
+ 325              		.cfi_offset 4, -12
+ 326              		.cfi_offset 5, -8
+ 327              		.cfi_offset 14, -4
+  60:SensorDrivers/Src/DTH11.c ****     uint8_t data = 0, i;
+ 328              		.loc 1 60 5 view .LVU65
+ 329              	.LVL25:
+  61:SensorDrivers/Src/DTH11.c ****     for (i = 0; i < 8; i++) {
+ 330              		.loc 1 61 5 view .LVU66
+ 331              		.loc 1 61 12 is_stmt 0 view .LVU67
+ 332 0002 0024     		movs	r4, #0
+  60:SensorDrivers/Src/DTH11.c ****     uint8_t data = 0, i;
+ 333              		.loc 1 60 13 view .LVU68
+ 334 0004 2546     		mov	r5, r4
+ 335              		.loc 1 61 5 view .LVU69
+ 336 0006 0EE0     		b	.L23
+ 337              	.LVL26:
+ 338              	.L25:
+  62:SensorDrivers/Src/DTH11.c **** 
+  63:SensorDrivers/Src/DTH11.c ****         while (HAL_GPIO_ReadPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN) == 0);	//wait for high (50 us low 
+  64:SensorDrivers/Src/DTH11.c ****         Delay_us(40);
+  65:SensorDrivers/Src/DTH11.c **** 
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 8
+
+
+  66:SensorDrivers/Src/DTH11.c ****         if (HAL_GPIO_ReadPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN) == 0) {
+  67:SensorDrivers/Src/DTH11.c ****             data &= ~(1 << (7 - i));
+  68:SensorDrivers/Src/DTH11.c ****         }
+  69:SensorDrivers/Src/DTH11.c ****         else {
+  70:SensorDrivers/Src/DTH11.c ****             data |= (1 << (7 - i));
+ 339              		.loc 1 70 13 is_stmt 1 view .LVU70
+ 340              		.loc 1 70 30 is_stmt 0 view .LVU71
+ 341 0008 C4F10702 		rsb	r2, r4, #7
+ 342              		.loc 1 70 24 view .LVU72
+ 343 000c 0123     		movs	r3, #1
+ 344 000e 9340     		lsls	r3, r3, r2
+ 345              		.loc 1 70 18 view .LVU73
+ 346 0010 2B43     		orrs	r3, r3, r5
+ 347 0012 DDB2     		uxtb	r5, r3
+ 348              	.LVL27:
+ 349              	.L27:
+  71:SensorDrivers/Src/DTH11.c ****         }
+  72:SensorDrivers/Src/DTH11.c ****         while (HAL_GPIO_ReadPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN) == 1);	//wait for low
+ 350              		.loc 1 72 66 is_stmt 1 discriminator 2 view .LVU74
+ 351              		.loc 1 72 16 is_stmt 0 discriminator 2 view .LVU75
+ 352 0014 4FF48071 		mov	r1, #256
+ 353 0018 1148     		ldr	r0, .L30
+ 354 001a FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 355              	.LVL28:
+ 356              		.loc 1 72 66 discriminator 2 view .LVU76
+ 357 001e 0128     		cmp	r0, #1
+ 358 0020 F8D0     		beq	.L27
+  61:SensorDrivers/Src/DTH11.c **** 
+ 359              		.loc 1 61 25 is_stmt 1 discriminator 2 view .LVU77
+ 360 0022 0134     		adds	r4, r4, #1
+ 361              	.LVL29:
+  61:SensorDrivers/Src/DTH11.c **** 
+ 362              		.loc 1 61 25 is_stmt 0 discriminator 2 view .LVU78
+ 363 0024 E4B2     		uxtb	r4, r4
+ 364              	.LVL30:
+ 365              	.L23:
+  61:SensorDrivers/Src/DTH11.c **** 
+ 366              		.loc 1 61 19 is_stmt 1 discriminator 1 view .LVU79
+ 367 0026 072C     		cmp	r4, #7
+ 368 0028 18D8     		bhi	.L29
+ 369              	.L24:
+  63:SensorDrivers/Src/DTH11.c ****         Delay_us(40);
+ 370              		.loc 1 63 66 discriminator 2 view .LVU80
+  63:SensorDrivers/Src/DTH11.c ****         Delay_us(40);
+ 371              		.loc 1 63 16 is_stmt 0 discriminator 2 view .LVU81
+ 372 002a 4FF48071 		mov	r1, #256
+ 373 002e 0C48     		ldr	r0, .L30
+ 374 0030 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 375              	.LVL31:
+  63:SensorDrivers/Src/DTH11.c ****         Delay_us(40);
+ 376              		.loc 1 63 66 discriminator 2 view .LVU82
+ 377 0034 0028     		cmp	r0, #0
+ 378 0036 F8D0     		beq	.L24
+  64:SensorDrivers/Src/DTH11.c **** 
+ 379              		.loc 1 64 9 is_stmt 1 view .LVU83
+ 380 0038 2820     		movs	r0, #40
+ 381 003a FFF7FEFF 		bl	Delay_us
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 9
+
+
+ 382              	.LVL32:
+  66:SensorDrivers/Src/DTH11.c ****             data &= ~(1 << (7 - i));
+ 383              		.loc 1 66 9 view .LVU84
+  66:SensorDrivers/Src/DTH11.c ****             data &= ~(1 << (7 - i));
+ 384              		.loc 1 66 13 is_stmt 0 view .LVU85
+ 385 003e 4FF48071 		mov	r1, #256
+ 386 0042 0748     		ldr	r0, .L30
+ 387 0044 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 388              	.LVL33:
+  66:SensorDrivers/Src/DTH11.c ****             data &= ~(1 << (7 - i));
+ 389              		.loc 1 66 12 discriminator 1 view .LVU86
+ 390 0048 0028     		cmp	r0, #0
+ 391 004a DDD1     		bne	.L25
+  67:SensorDrivers/Src/DTH11.c ****         }
+ 392              		.loc 1 67 13 is_stmt 1 view .LVU87
+  67:SensorDrivers/Src/DTH11.c ****         }
+ 393              		.loc 1 67 31 is_stmt 0 view .LVU88
+ 394 004c C4F10702 		rsb	r2, r4, #7
+  67:SensorDrivers/Src/DTH11.c ****         }
+ 395              		.loc 1 67 25 view .LVU89
+ 396 0050 0123     		movs	r3, #1
+ 397 0052 9340     		lsls	r3, r3, r2
+  67:SensorDrivers/Src/DTH11.c ****         }
+ 398              		.loc 1 67 18 view .LVU90
+ 399 0054 DB43     		mvns	r3, r3
+ 400 0056 5BB2     		sxtb	r3, r3
+ 401 0058 1D40     		ands	r5, r5, r3
+ 402              	.LVL34:
+  67:SensorDrivers/Src/DTH11.c ****         }
+ 403              		.loc 1 67 18 view .LVU91
+ 404 005a DBE7     		b	.L27
+ 405              	.L29:
+  73:SensorDrivers/Src/DTH11.c ****     }
+  74:SensorDrivers/Src/DTH11.c ****     return data;
+ 406              		.loc 1 74 5 is_stmt 1 view .LVU92
+  75:SensorDrivers/Src/DTH11.c **** }
+ 407              		.loc 1 75 1 is_stmt 0 view .LVU93
+ 408 005c 2846     		mov	r0, r5
+ 409 005e 38BD     		pop	{r3, r4, r5, pc}
+ 410              	.LVL35:
+ 411              	.L31:
+ 412              		.loc 1 75 1 view .LVU94
+ 413              		.align	2
+ 414              	.L30:
+ 415 0060 00080048 		.word	1207961600
+ 416              		.cfi_endproc
+ 417              	.LFE135:
+ 419              		.text
+ 420              	.Letext0:
+ 421              		.file 2 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/machine/_defa
+ 422              		.file 3 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/sys/_stdint.h
+ 423              		.file 4 "Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f303xe.h"
+ 424              		.file 5 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_def.h"
+ 425              		.file 6 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_gpio.h"
+ 426              		.file 7 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dma.h"
+ 427              		.file 8 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h"
+ 428              		.file 9 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h"
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 10
+
+
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 DTH11.c
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:21     .text.Delay_us:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:27     .text.Delay_us:00000000 Delay_us
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:72     .text.Delay_us:0000001c $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:77     .text.Set_Pin_Output:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:83     .text.Set_Pin_Output:00000000 Set_Pin_Output
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:129    .text.Set_Pin_Input:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:135    .text.Set_Pin_Input:00000000 Set_Pin_Input
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:177    .text.DHT11_Start:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:183    .text.DHT11_Start:00000000 DHT11_Start
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:229    .text.DHT11_Start:00000040 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:234    .text.DHT11_Check_Response:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:240    .text.DHT11_Check_Response:00000000 DHT11_Check_Response
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:305    .text.DHT11_Check_Response:00000044 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:310    .text.DHT11_Read_Byte:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:316    .text.DHT11_Read_Byte:00000000 DHT11_Read_Byte
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cct9S2SS.s:415    .text.DHT11_Read_Byte:00000060 $d
+
+UNDEFINED SYMBOLS
+HAL_TIM_Base_Start
+htim2
+HAL_GPIO_Init
+HAL_GPIO_WritePin
+HAL_Delay
+HAL_GPIO_ReadPin

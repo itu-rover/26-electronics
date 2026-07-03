@@ -57,7 +57,7 @@ uint8_t DHT11_Check_Response() {
 
 // Function to read a single byte
 uint8_t DHT11_Read_Byte() {
-    uint8_t data, i;
+    uint8_t data = 0, i;
     for (i = 0; i < 8; i++) {
 
         while (HAL_GPIO_ReadPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN) == 0);	//wait for high (50 us low at the start of transmisson)

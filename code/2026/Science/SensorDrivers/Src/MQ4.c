@@ -35,10 +35,13 @@ float Read_CH4() {
 	ADC_Val = HAL_ADC_GetValue(&hadc1);
 	HAL_ADC_Stop(&hadc1);
 
-	Vout = ADC_Val * MQ4_ADC_VREF / (float)MQ4_ADC_MAX_VALUE;
-	RS = ((float) MQ4_ADC_VREF / Vout - 1) * MQ4_RL;
+	Vout = ADC_Val * MQ4_ADC_VREF / MQ4_ADC_MAX_VALUE;
+	RS = ((float) MQ4_ADC_VREF / Vout - 1) * MQ4_RL; 
 
-	ppm = pow(10,  (0.8316f - log(RS/(float)MQ4_R0)) / 0.5991f);
+	//ppm = pow(10,  (0.8316f - log10(RS/MQ4_R0)) / 0.5991f);
+
+	ppm = pow(10,  (-2.513f * log10(RS/MQ4_R0)) + 0.487f);
+
 
 	return ppm;
 }

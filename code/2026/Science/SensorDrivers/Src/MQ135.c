@@ -23,8 +23,10 @@ float Read_NH3 (){
 	Vout = ADC_Val * MQ135_ADC_VREF / MQ135_ADC_MAX_VALUE;
 	RS = ((float)MQ135_ADC_VREF / Vout - 1) * MQ135_RL;
 
-	p = ((log10(RS/MQ135_R0) - 0.2) / -0.415);
+	p = -2.114 * (log10(RS/MQ135_R0) + 0.736);
 	ppm = pow(10.0,p);
+
+
 
 	return ppm;
 }

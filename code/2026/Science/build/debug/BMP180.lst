@@ -1,0 +1,1017 @@
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"BMP180.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "SensorDrivers/Src/BMP180.c"
+  20              		.section	.text.read_calib_data,"ax",%progbits
+  21              		.align	1
+  22              		.global	read_calib_data
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	read_calib_data:
+  28              	.LFB130:
+   1:SensorDrivers/Src/BMP180.c **** /*
+   2:SensorDrivers/Src/BMP180.c ****  * BMP180.c
+   3:SensorDrivers/Src/BMP180.c ****  *
+   4:SensorDrivers/Src/BMP180.c ****  *  Created on: May 15, 2025
+   5:SensorDrivers/Src/BMP180.c ****  *      Author: ALPEREN
+   6:SensorDrivers/Src/BMP180.c ****  */
+   7:SensorDrivers/Src/BMP180.c **** 
+   8:SensorDrivers/Src/BMP180.c **** /*
+   9:SensorDrivers/Src/BMP180.c ****  * Datasheet:
+  10:SensorDrivers/Src/BMP180.c ****  * https://www.mouser.com.tr/datasheet/2/783/BST-BMP180-DS000-1509579.pdf
+  11:SensorDrivers/Src/BMP180.c ****  */
+  12:SensorDrivers/Src/BMP180.c **** 
+  13:SensorDrivers/Src/BMP180.c **** #include "BMP_180.h"
+  14:SensorDrivers/Src/BMP180.c **** #include <math.h>
+  15:SensorDrivers/Src/BMP180.c **** 
+  16:SensorDrivers/Src/BMP180.c **** 
+  17:SensorDrivers/Src/BMP180.c **** extern I2C_HandleTypeDef hi2c1;
+  18:SensorDrivers/Src/BMP180.c **** 
+  19:SensorDrivers/Src/BMP180.c **** /*EEPROM CALIBRATION*/
+  20:SensorDrivers/Src/BMP180.c **** short AC1;
+  21:SensorDrivers/Src/BMP180.c **** short AC2;
+  22:SensorDrivers/Src/BMP180.c **** short AC3;
+  23:SensorDrivers/Src/BMP180.c **** unsigned short AC4;
+  24:SensorDrivers/Src/BMP180.c **** unsigned short AC5;
+  25:SensorDrivers/Src/BMP180.c **** unsigned short AC6;
+  26:SensorDrivers/Src/BMP180.c **** short B1;
+  27:SensorDrivers/Src/BMP180.c **** short B2;
+  28:SensorDrivers/Src/BMP180.c **** short MB;
+  29:SensorDrivers/Src/BMP180.c **** short MC;
+  30:SensorDrivers/Src/BMP180.c **** short MD;
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 2
+
+
+  31:SensorDrivers/Src/BMP180.c **** long UT;
+  32:SensorDrivers/Src/BMP180.c **** long UP;
+  33:SensorDrivers/Src/BMP180.c **** long X1;
+  34:SensorDrivers/Src/BMP180.c **** long X2;
+  35:SensorDrivers/Src/BMP180.c **** long X3;
+  36:SensorDrivers/Src/BMP180.c **** long B3;
+  37:SensorDrivers/Src/BMP180.c **** long B5;
+  38:SensorDrivers/Src/BMP180.c **** unsigned long B4;
+  39:SensorDrivers/Src/BMP180.c **** long B6;
+  40:SensorDrivers/Src/BMP180.c **** unsigned long B7;
+  41:SensorDrivers/Src/BMP180.c **** /*-----------------------------------------------------------------------*/
+  42:SensorDrivers/Src/BMP180.c **** 
+  43:SensorDrivers/Src/BMP180.c **** uint8_t calib_data [22];
+  44:SensorDrivers/Src/BMP180.c **** 
+  45:SensorDrivers/Src/BMP180.c **** 
+  46:SensorDrivers/Src/BMP180.c **** 
+  47:SensorDrivers/Src/BMP180.c **** 
+  48:SensorDrivers/Src/BMP180.c **** 
+  49:SensorDrivers/Src/BMP180.c **** void read_calib_data(void) {
+  29              		.loc 1 49 28 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 10B5     		push	{r4, lr}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 4, -8
+  36              		.cfi_offset 14, -4
+  37 0002 84B0     		sub	sp, sp, #16
+  38              		.cfi_def_cfa_offset 24
+  50:SensorDrivers/Src/BMP180.c **** //	HAL_I2C_Master_Transmit(&hi2c1, BMP180_ADDRESS, CALIB_ADDRESS, 1, HAL_MAX_DELAY);
+  51:SensorDrivers/Src/BMP180.c **** //	HAL_I2C_Master_Receive(&hi2c1, BMP180_ADDRESS, calib_data, 22, HAL_MAX_DELAY);
+  52:SensorDrivers/Src/BMP180.c **** 
+  53:SensorDrivers/Src/BMP180.c **** 	HAL_I2C_Mem_Read(&hi2c1, BMP180_ADDRESS, CALIB_ADDRESS, 1, calib_data, 22, HAL_MAX_DELAY);
+  39              		.loc 1 53 2 view .LVU1
+  40 0004 4FF0FF33 		mov	r3, #-1
+  41 0008 0293     		str	r3, [sp, #8]
+  42 000a 1623     		movs	r3, #22
+  43 000c 0193     		str	r3, [sp, #4]
+  44 000e 264C     		ldr	r4, .L3
+  45 0010 0094     		str	r4, [sp]
+  46 0012 0123     		movs	r3, #1
+  47 0014 AA22     		movs	r2, #170
+  48 0016 EE21     		movs	r1, #238
+  49 0018 2448     		ldr	r0, .L3+4
+  50 001a FFF7FEFF 		bl	HAL_I2C_Mem_Read
+  51              	.LVL0:
+  54:SensorDrivers/Src/BMP180.c **** 
+  55:SensorDrivers/Src/BMP180.c **** 	AC1 = ((uint16_t)calib_data[0]<<8)  | calib_data[1];
+  52              		.loc 1 55 2 view .LVU2
+  53              		.loc 1 55 29 is_stmt 0 view .LVU3
+  54 001e 2278     		ldrb	r2, [r4]	@ zero_extendqisi2
+  55              		.loc 1 55 50 view .LVU4
+  56 0020 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+  57              		.loc 1 55 38 view .LVU5
+  58 0022 43EA0223 		orr	r3, r3, r2, lsl #8
+  59              		.loc 1 55 6 view .LVU6
+  60 0026 224A     		ldr	r2, .L3+8
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 3
+
+
+  61 0028 1380     		strh	r3, [r2]	@ movhi
+  56:SensorDrivers/Src/BMP180.c **** 	AC2 = ((uint16_t)calib_data[2]<<8)  | calib_data[3];
+  62              		.loc 1 56 2 is_stmt 1 view .LVU7
+  63              		.loc 1 56 29 is_stmt 0 view .LVU8
+  64 002a A278     		ldrb	r2, [r4, #2]	@ zero_extendqisi2
+  65              		.loc 1 56 50 view .LVU9
+  66 002c E378     		ldrb	r3, [r4, #3]	@ zero_extendqisi2
+  67              		.loc 1 56 38 view .LVU10
+  68 002e 43EA0223 		orr	r3, r3, r2, lsl #8
+  69              		.loc 1 56 6 view .LVU11
+  70 0032 204A     		ldr	r2, .L3+12
+  71 0034 1380     		strh	r3, [r2]	@ movhi
+  57:SensorDrivers/Src/BMP180.c **** 	AC3 = ((uint16_t)calib_data[4]<<8)  | calib_data[5];
+  72              		.loc 1 57 2 is_stmt 1 view .LVU12
+  73              		.loc 1 57 29 is_stmt 0 view .LVU13
+  74 0036 2279     		ldrb	r2, [r4, #4]	@ zero_extendqisi2
+  75              		.loc 1 57 50 view .LVU14
+  76 0038 6379     		ldrb	r3, [r4, #5]	@ zero_extendqisi2
+  77              		.loc 1 57 38 view .LVU15
+  78 003a 43EA0223 		orr	r3, r3, r2, lsl #8
+  79              		.loc 1 57 6 view .LVU16
+  80 003e 1E4A     		ldr	r2, .L3+16
+  81 0040 1380     		strh	r3, [r2]	@ movhi
+  58:SensorDrivers/Src/BMP180.c **** 	AC4 = ((uint16_t)calib_data[6]<<8)  | calib_data[7];
+  82              		.loc 1 58 2 is_stmt 1 view .LVU17
+  83              		.loc 1 58 29 is_stmt 0 view .LVU18
+  84 0042 A279     		ldrb	r2, [r4, #6]	@ zero_extendqisi2
+  85              		.loc 1 58 50 view .LVU19
+  86 0044 E379     		ldrb	r3, [r4, #7]	@ zero_extendqisi2
+  87              		.loc 1 58 38 view .LVU20
+  88 0046 43EA0223 		orr	r3, r3, r2, lsl #8
+  89              		.loc 1 58 6 view .LVU21
+  90 004a 1C4A     		ldr	r2, .L3+20
+  91 004c 1380     		strh	r3, [r2]	@ movhi
+  59:SensorDrivers/Src/BMP180.c **** 	AC5 = ((uint16_t)calib_data[8]<<8)  | calib_data[9];
+  92              		.loc 1 59 2 is_stmt 1 view .LVU22
+  93              		.loc 1 59 29 is_stmt 0 view .LVU23
+  94 004e 227A     		ldrb	r2, [r4, #8]	@ zero_extendqisi2
+  95              		.loc 1 59 50 view .LVU24
+  96 0050 637A     		ldrb	r3, [r4, #9]	@ zero_extendqisi2
+  97              		.loc 1 59 38 view .LVU25
+  98 0052 43EA0223 		orr	r3, r3, r2, lsl #8
+  99              		.loc 1 59 6 view .LVU26
+ 100 0056 1A4A     		ldr	r2, .L3+24
+ 101 0058 1380     		strh	r3, [r2]	@ movhi
+  60:SensorDrivers/Src/BMP180.c **** 	AC6 = ((uint16_t)calib_data[10]<<8) | calib_data[11];
+ 102              		.loc 1 60 2 is_stmt 1 view .LVU27
+ 103              		.loc 1 60 29 is_stmt 0 view .LVU28
+ 104 005a A27A     		ldrb	r2, [r4, #10]	@ zero_extendqisi2
+ 105              		.loc 1 60 50 view .LVU29
+ 106 005c E37A     		ldrb	r3, [r4, #11]	@ zero_extendqisi2
+ 107              		.loc 1 60 38 view .LVU30
+ 108 005e 43EA0223 		orr	r3, r3, r2, lsl #8
+ 109              		.loc 1 60 6 view .LVU31
+ 110 0062 184A     		ldr	r2, .L3+28
+ 111 0064 1380     		strh	r3, [r2]	@ movhi
+  61:SensorDrivers/Src/BMP180.c **** 	B1  = ((uint16_t)calib_data[12]<<8) | calib_data[13];
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 4
+
+
+ 112              		.loc 1 61 2 is_stmt 1 view .LVU32
+ 113              		.loc 1 61 29 is_stmt 0 view .LVU33
+ 114 0066 227B     		ldrb	r2, [r4, #12]	@ zero_extendqisi2
+ 115              		.loc 1 61 50 view .LVU34
+ 116 0068 637B     		ldrb	r3, [r4, #13]	@ zero_extendqisi2
+ 117              		.loc 1 61 38 view .LVU35
+ 118 006a 43EA0223 		orr	r3, r3, r2, lsl #8
+ 119              		.loc 1 61 6 view .LVU36
+ 120 006e 164A     		ldr	r2, .L3+32
+ 121 0070 1380     		strh	r3, [r2]	@ movhi
+  62:SensorDrivers/Src/BMP180.c **** 	B2  = ((uint16_t)calib_data[14]<<8) | calib_data[15];
+ 122              		.loc 1 62 2 is_stmt 1 view .LVU37
+ 123              		.loc 1 62 29 is_stmt 0 view .LVU38
+ 124 0072 A27B     		ldrb	r2, [r4, #14]	@ zero_extendqisi2
+ 125              		.loc 1 62 50 view .LVU39
+ 126 0074 E37B     		ldrb	r3, [r4, #15]	@ zero_extendqisi2
+ 127              		.loc 1 62 38 view .LVU40
+ 128 0076 43EA0223 		orr	r3, r3, r2, lsl #8
+ 129              		.loc 1 62 6 view .LVU41
+ 130 007a 144A     		ldr	r2, .L3+36
+ 131 007c 1380     		strh	r3, [r2]	@ movhi
+  63:SensorDrivers/Src/BMP180.c **** 	MB  = ((uint16_t)calib_data[16]<<8) | calib_data[17];
+ 132              		.loc 1 63 2 is_stmt 1 view .LVU42
+ 133              		.loc 1 63 29 is_stmt 0 view .LVU43
+ 134 007e 227C     		ldrb	r2, [r4, #16]	@ zero_extendqisi2
+ 135              		.loc 1 63 50 view .LVU44
+ 136 0080 637C     		ldrb	r3, [r4, #17]	@ zero_extendqisi2
+ 137              		.loc 1 63 38 view .LVU45
+ 138 0082 43EA0223 		orr	r3, r3, r2, lsl #8
+ 139              		.loc 1 63 6 view .LVU46
+ 140 0086 124A     		ldr	r2, .L3+40
+ 141 0088 1380     		strh	r3, [r2]	@ movhi
+  64:SensorDrivers/Src/BMP180.c **** 	MC  = ((uint16_t)calib_data[18]<<8) | calib_data[19];
+ 142              		.loc 1 64 2 is_stmt 1 view .LVU47
+ 143              		.loc 1 64 29 is_stmt 0 view .LVU48
+ 144 008a A27C     		ldrb	r2, [r4, #18]	@ zero_extendqisi2
+ 145              		.loc 1 64 50 view .LVU49
+ 146 008c E37C     		ldrb	r3, [r4, #19]	@ zero_extendqisi2
+ 147              		.loc 1 64 38 view .LVU50
+ 148 008e 43EA0223 		orr	r3, r3, r2, lsl #8
+ 149              		.loc 1 64 6 view .LVU51
+ 150 0092 104A     		ldr	r2, .L3+44
+ 151 0094 1380     		strh	r3, [r2]	@ movhi
+  65:SensorDrivers/Src/BMP180.c **** 	MD  = ((uint16_t)calib_data[20]<<8) | calib_data[21];
+ 152              		.loc 1 65 2 is_stmt 1 view .LVU52
+ 153              		.loc 1 65 29 is_stmt 0 view .LVU53
+ 154 0096 227D     		ldrb	r2, [r4, #20]	@ zero_extendqisi2
+ 155              		.loc 1 65 50 view .LVU54
+ 156 0098 637D     		ldrb	r3, [r4, #21]	@ zero_extendqisi2
+ 157              		.loc 1 65 38 view .LVU55
+ 158 009a 43EA0223 		orr	r3, r3, r2, lsl #8
+ 159              		.loc 1 65 6 view .LVU56
+ 160 009e 0E4A     		ldr	r2, .L3+48
+ 161 00a0 1380     		strh	r3, [r2]	@ movhi
+  66:SensorDrivers/Src/BMP180.c **** }
+ 162              		.loc 1 66 1 view .LVU57
+ 163 00a2 04B0     		add	sp, sp, #16
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 5
+
+
+ 164              		.cfi_def_cfa_offset 8
+ 165              		@ sp needed
+ 166 00a4 10BD     		pop	{r4, pc}
+ 167              	.L4:
+ 168 00a6 00BF     		.align	2
+ 169              	.L3:
+ 170 00a8 00000000 		.word	calib_data
+ 171 00ac 00000000 		.word	hi2c1
+ 172 00b0 00000000 		.word	AC1
+ 173 00b4 00000000 		.word	AC2
+ 174 00b8 00000000 		.word	AC3
+ 175 00bc 00000000 		.word	AC4
+ 176 00c0 00000000 		.word	AC5
+ 177 00c4 00000000 		.word	AC6
+ 178 00c8 00000000 		.word	B1
+ 179 00cc 00000000 		.word	B2
+ 180 00d0 00000000 		.word	MB
+ 181 00d4 00000000 		.word	MC
+ 182 00d8 00000000 		.word	MD
+ 183              		.cfi_endproc
+ 184              	.LFE130:
+ 186              		.section	.text.get_ut,"ax",%progbits
+ 187              		.align	1
+ 188              		.global	get_ut
+ 189              		.syntax unified
+ 190              		.thumb
+ 191              		.thumb_func
+ 193              	get_ut:
+ 194              	.LFB131:
+  67:SensorDrivers/Src/BMP180.c **** 
+  68:SensorDrivers/Src/BMP180.c **** 
+  69:SensorDrivers/Src/BMP180.c **** uint16_t get_ut (void) {
+ 195              		.loc 1 69 24 is_stmt 1 view -0
+ 196              		.cfi_startproc
+ 197              		@ args = 0, pretend = 0, frame = 8
+ 198              		@ frame_needed = 0, uses_anonymous_args = 0
+ 199 0000 70B5     		push	{r4, r5, r6, lr}
+ 200              		.cfi_def_cfa_offset 16
+ 201              		.cfi_offset 4, -16
+ 202              		.cfi_offset 5, -12
+ 203              		.cfi_offset 6, -8
+ 204              		.cfi_offset 14, -4
+ 205 0002 86B0     		sub	sp, sp, #24
+ 206              		.cfi_def_cfa_offset 40
+  70:SensorDrivers/Src/BMP180.c **** 	uint8_t data = 0x2E;
+ 207              		.loc 1 70 2 view .LVU59
+ 208              		.loc 1 70 10 is_stmt 0 view .LVU60
+ 209 0004 2E23     		movs	r3, #46
+ 210 0006 8DF81730 		strb	r3, [sp, #23]
+  71:SensorDrivers/Src/BMP180.c **** 	uint8_t ut_data[2] = {0};
+ 211              		.loc 1 71 2 is_stmt 1 view .LVU61
+ 212              		.loc 1 71 10 is_stmt 0 view .LVU62
+ 213 000a 0023     		movs	r3, #0
+ 214 000c ADF81430 		strh	r3, [sp, #20]	@ movhi
+  72:SensorDrivers/Src/BMP180.c **** 	uint16_t temp;
+ 215              		.loc 1 72 2 is_stmt 1 view .LVU63
+  73:SensorDrivers/Src/BMP180.c **** 
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 6
+
+
+  74:SensorDrivers/Src/BMP180.c **** 	HAL_I2C_Mem_Write(&hi2c1, BMP180_ADDRESS, CTRL_MEAS, 1, &data, 1, HAL_MAX_DELAY);
+ 216              		.loc 1 74 2 view .LVU64
+ 217 0010 124D     		ldr	r5, .L7
+ 218 0012 4FF0FF36 		mov	r6, #-1
+ 219 0016 0296     		str	r6, [sp, #8]
+ 220 0018 0124     		movs	r4, #1
+ 221 001a 0194     		str	r4, [sp, #4]
+ 222 001c 0DF11703 		add	r3, sp, #23
+ 223 0020 0093     		str	r3, [sp]
+ 224 0022 2346     		mov	r3, r4
+ 225 0024 F422     		movs	r2, #244
+ 226 0026 EE21     		movs	r1, #238
+ 227 0028 2846     		mov	r0, r5
+ 228 002a FFF7FEFF 		bl	HAL_I2C_Mem_Write
+ 229              	.LVL1:
+  75:SensorDrivers/Src/BMP180.c **** 	HAL_Delay(5);
+ 230              		.loc 1 75 2 view .LVU65
+ 231 002e 0520     		movs	r0, #5
+ 232 0030 FFF7FEFF 		bl	HAL_Delay
+ 233              	.LVL2:
+  76:SensorDrivers/Src/BMP180.c **** 	HAL_I2C_Mem_Read(&hi2c1, BMP180_ADDRESS, OUT_MSB, 1, ut_data, 2, HAL_MAX_DELAY);
+ 234              		.loc 1 76 2 view .LVU66
+ 235 0034 0296     		str	r6, [sp, #8]
+ 236 0036 0223     		movs	r3, #2
+ 237 0038 0193     		str	r3, [sp, #4]
+ 238 003a 05AB     		add	r3, sp, #20
+ 239 003c 0093     		str	r3, [sp]
+ 240 003e 2346     		mov	r3, r4
+ 241 0040 F622     		movs	r2, #246
+ 242 0042 EE21     		movs	r1, #238
+ 243 0044 2846     		mov	r0, r5
+ 244 0046 FFF7FEFF 		bl	HAL_I2C_Mem_Read
+ 245              	.LVL3:
+  77:SensorDrivers/Src/BMP180.c **** 
+  78:SensorDrivers/Src/BMP180.c **** 	temp = ((uint16_t)ut_data[0]<<8) | ut_data[1];
+ 246              		.loc 1 78 2 view .LVU67
+ 247              		.loc 1 78 27 is_stmt 0 view .LVU68
+ 248 004a 9DF81400 		ldrb	r0, [sp, #20]	@ zero_extendqisi2
+ 249              		.loc 1 78 44 view .LVU69
+ 250 004e 9DF81530 		ldrb	r3, [sp, #21]	@ zero_extendqisi2
+ 251              	.LVL4:
+  79:SensorDrivers/Src/BMP180.c **** 
+  80:SensorDrivers/Src/BMP180.c **** 	return temp;
+ 252              		.loc 1 80 2 is_stmt 1 view .LVU70
+  81:SensorDrivers/Src/BMP180.c **** }
+ 253              		.loc 1 81 1 is_stmt 0 view .LVU71
+ 254 0052 43EA0020 		orr	r0, r3, r0, lsl #8
+ 255              	.LVL5:
+ 256              		.loc 1 81 1 view .LVU72
+ 257 0056 06B0     		add	sp, sp, #24
+ 258              		.cfi_def_cfa_offset 16
+ 259              		@ sp needed
+ 260 0058 70BD     		pop	{r4, r5, r6, pc}
+ 261              	.L8:
+ 262 005a 00BF     		.align	2
+ 263              	.L7:
+ 264 005c 00000000 		.word	hi2c1
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 7
+
+
+ 265              		.cfi_endproc
+ 266              	.LFE131:
+ 268              		.section	.text.get_temp,"ax",%progbits
+ 269              		.align	1
+ 270              		.global	get_temp
+ 271              		.syntax unified
+ 272              		.thumb
+ 273              		.thumb_func
+ 275              	get_temp:
+ 276              	.LFB132:
+  82:SensorDrivers/Src/BMP180.c **** 
+  83:SensorDrivers/Src/BMP180.c **** 
+  84:SensorDrivers/Src/BMP180.c **** 
+  85:SensorDrivers/Src/BMP180.c **** float get_temp(void) {
+ 277              		.loc 1 85 22 is_stmt 1 view -0
+ 278              		.cfi_startproc
+ 279              		@ args = 0, pretend = 0, frame = 0
+ 280              		@ frame_needed = 0, uses_anonymous_args = 0
+ 281              		@ link register save eliminated.
+  86:SensorDrivers/Src/BMP180.c ****     long temp;
+ 282              		.loc 1 86 5 view .LVU74
+  87:SensorDrivers/Src/BMP180.c **** 
+  88:SensorDrivers/Src/BMP180.c **** //    UT = get_ut();
+  89:SensorDrivers/Src/BMP180.c **** 
+  90:SensorDrivers/Src/BMP180.c ****     X1 = ((UT - (long)AC6) * (long)AC5) >> 15;
+ 283              		.loc 1 90 5 view .LVU75
+ 284              		.loc 1 90 17 is_stmt 0 view .LVU76
+ 285 0000 124B     		ldr	r3, .L10
+ 286 0002 1A88     		ldrh	r2, [r3]
+ 287              		.loc 1 90 15 view .LVU77
+ 288 0004 124B     		ldr	r3, .L10+4
+ 289 0006 1B68     		ldr	r3, [r3]
+ 290 0008 9B1A     		subs	r3, r3, r2
+ 291              		.loc 1 90 30 view .LVU78
+ 292 000a 124A     		ldr	r2, .L10+8
+ 293 000c 1288     		ldrh	r2, [r2]
+ 294              		.loc 1 90 28 view .LVU79
+ 295 000e 02FB03F3 		mul	r3, r2, r3
+ 296              		.loc 1 90 41 view .LVU80
+ 297 0012 DB13     		asrs	r3, r3, #15
+ 298              		.loc 1 90 8 view .LVU81
+ 299 0014 104A     		ldr	r2, .L10+12
+ 300 0016 1360     		str	r3, [r2]
+  91:SensorDrivers/Src/BMP180.c ****     X2 = ((long)MC << 11) / (X1 + (long)MD);
+ 301              		.loc 1 91 5 is_stmt 1 view .LVU82
+ 302              		.loc 1 91 11 is_stmt 0 view .LVU83
+ 303 0018 104A     		ldr	r2, .L10+16
+ 304 001a B2F90020 		ldrsh	r2, [r2]
+ 305              		.loc 1 91 20 view .LVU84
+ 306 001e D202     		lsls	r2, r2, #11
+ 307              		.loc 1 91 35 view .LVU85
+ 308 0020 0F49     		ldr	r1, .L10+20
+ 309 0022 B1F90010 		ldrsh	r1, [r1]
+ 310              		.loc 1 91 33 view .LVU86
+ 311 0026 1944     		add	r1, r1, r3
+ 312              		.loc 1 91 27 view .LVU87
+ 313 0028 92FBF1F2 		sdiv	r2, r2, r1
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 8
+
+
+ 314              		.loc 1 91 8 view .LVU88
+ 315 002c 0D49     		ldr	r1, .L10+24
+ 316 002e 0A60     		str	r2, [r1]
+  92:SensorDrivers/Src/BMP180.c ****     B5 = X1 + X2;
+ 317              		.loc 1 92 5 is_stmt 1 view .LVU89
+ 318              		.loc 1 92 13 is_stmt 0 view .LVU90
+ 319 0030 1344     		add	r3, r3, r2
+ 320              		.loc 1 92 8 view .LVU91
+ 321 0032 0D4A     		ldr	r2, .L10+28
+ 322 0034 1360     		str	r3, [r2]
+  93:SensorDrivers/Src/BMP180.c ****     temp = (B5 + 8) >> 4;
+ 323              		.loc 1 93 5 is_stmt 1 view .LVU92
+ 324              		.loc 1 93 16 is_stmt 0 view .LVU93
+ 325 0036 0833     		adds	r3, r3, #8
+ 326              		.loc 1 93 10 view .LVU94
+ 327 0038 1B11     		asrs	r3, r3, #4
+ 328              	.LVL6:
+  94:SensorDrivers/Src/BMP180.c **** 
+  95:SensorDrivers/Src/BMP180.c ****     return temp / 10.0f;
+ 329              		.loc 1 95 5 is_stmt 1 view .LVU95
+ 330              		.loc 1 95 17 is_stmt 0 view .LVU96
+ 331 003a 07EE903A 		vmov	s15, r3	@ int
+ 332 003e B8EEE70A 		vcvt.f32.s32	s0, s15
+  96:SensorDrivers/Src/BMP180.c **** }
+ 333              		.loc 1 96 1 view .LVU97
+ 334 0042 F2EE047A 		vmov.f32	s15, #1.0e+1
+ 335 0046 80EE270A 		vdiv.f32	s0, s0, s15
+ 336 004a 7047     		bx	lr
+ 337              	.L11:
+ 338              		.align	2
+ 339              	.L10:
+ 340 004c 00000000 		.word	AC6
+ 341 0050 00000000 		.word	UT
+ 342 0054 00000000 		.word	AC5
+ 343 0058 00000000 		.word	X1
+ 344 005c 00000000 		.word	MC
+ 345 0060 00000000 		.word	MD
+ 346 0064 00000000 		.word	X2
+ 347 0068 00000000 		.word	B5
+ 348              		.cfi_endproc
+ 349              	.LFE132:
+ 351              		.section	.text.get_up,"ax",%progbits
+ 352              		.align	1
+ 353              		.global	get_up
+ 354              		.syntax unified
+ 355              		.thumb
+ 356              		.thumb_func
+ 358              	get_up:
+ 359              	.LFB133:
+  97:SensorDrivers/Src/BMP180.c **** 
+  98:SensorDrivers/Src/BMP180.c **** 
+  99:SensorDrivers/Src/BMP180.c **** 
+ 100:SensorDrivers/Src/BMP180.c **** uint32_t get_up(void) {
+ 360              		.loc 1 100 23 is_stmt 1 view -0
+ 361              		.cfi_startproc
+ 362              		@ args = 0, pretend = 0, frame = 8
+ 363              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 9
+
+
+ 364 0000 70B5     		push	{r4, r5, r6, lr}
+ 365              		.cfi_def_cfa_offset 16
+ 366              		.cfi_offset 4, -16
+ 367              		.cfi_offset 5, -12
+ 368              		.cfi_offset 6, -8
+ 369              		.cfi_offset 14, -4
+ 370 0002 86B0     		sub	sp, sp, #24
+ 371              		.cfi_def_cfa_offset 40
+ 101:SensorDrivers/Src/BMP180.c **** 	uint8_t data = 0x34 + (OSS<<6);
+ 372              		.loc 1 101 2 view .LVU99
+ 373              		.loc 1 101 10 is_stmt 0 view .LVU100
+ 374 0004 7423     		movs	r3, #116
+ 375 0006 8DF81730 		strb	r3, [sp, #23]
+ 102:SensorDrivers/Src/BMP180.c **** 	uint8_t up_data[3];
+ 376              		.loc 1 102 2 is_stmt 1 view .LVU101
+ 103:SensorDrivers/Src/BMP180.c **** 	uint32_t up;
+ 377              		.loc 1 103 2 view .LVU102
+ 104:SensorDrivers/Src/BMP180.c **** 
+ 105:SensorDrivers/Src/BMP180.c **** 	HAL_I2C_Mem_Write(&hi2c1, BMP180_ADDRESS, CTRL_MEAS, 1, &data, 1, HAL_MAX_DELAY);
+ 378              		.loc 1 105 2 view .LVU103
+ 379 000a 154D     		ldr	r5, .L14
+ 380 000c 4FF0FF36 		mov	r6, #-1
+ 381 0010 0296     		str	r6, [sp, #8]
+ 382 0012 0124     		movs	r4, #1
+ 383 0014 0194     		str	r4, [sp, #4]
+ 384 0016 0DF11703 		add	r3, sp, #23
+ 385 001a 0093     		str	r3, [sp]
+ 386 001c 2346     		mov	r3, r4
+ 387 001e F422     		movs	r2, #244
+ 388 0020 EE21     		movs	r1, #238
+ 389 0022 2846     		mov	r0, r5
+ 390 0024 FFF7FEFF 		bl	HAL_I2C_Mem_Write
+ 391              	.LVL7:
+ 106:SensorDrivers/Src/BMP180.c **** 	HAL_Delay(5);
+ 392              		.loc 1 106 2 view .LVU104
+ 393 0028 0520     		movs	r0, #5
+ 394 002a FFF7FEFF 		bl	HAL_Delay
+ 395              	.LVL8:
+ 107:SensorDrivers/Src/BMP180.c **** 
+ 108:SensorDrivers/Src/BMP180.c **** 	HAL_I2C_Mem_Read(&hi2c1, BMP180_ADDRESS, OUT_MSB, 1, up_data, 3, HAL_MAX_DELAY);
+ 396              		.loc 1 108 2 view .LVU105
+ 397 002e 0296     		str	r6, [sp, #8]
+ 398 0030 0323     		movs	r3, #3
+ 399 0032 0193     		str	r3, [sp, #4]
+ 400 0034 05AB     		add	r3, sp, #20
+ 401 0036 0093     		str	r3, [sp]
+ 402 0038 2346     		mov	r3, r4
+ 403 003a F622     		movs	r2, #246
+ 404 003c EE21     		movs	r1, #238
+ 405 003e 2846     		mov	r0, r5
+ 406 0040 FFF7FEFF 		bl	HAL_I2C_Mem_Read
+ 407              	.LVL9:
+ 109:SensorDrivers/Src/BMP180.c **** 
+ 110:SensorDrivers/Src/BMP180.c **** 	up = ((uint32_t)(up_data[0]<<16) + (uint32_t)(up_data[1]<<8) + up_data[2]) >> (8-OSS);
+ 408              		.loc 1 110 2 view .LVU106
+ 409              		.loc 1 110 26 is_stmt 0 view .LVU107
+ 410 0044 9DF81430 		ldrb	r3, [sp, #20]	@ zero_extendqisi2
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 10
+
+
+ 411              		.loc 1 110 55 view .LVU108
+ 412 0048 9DF81500 		ldrb	r0, [sp, #21]	@ zero_extendqisi2
+ 413              		.loc 1 110 37 view .LVU109
+ 414 004c 0002     		lsls	r0, r0, #8
+ 415              		.loc 1 110 35 view .LVU110
+ 416 004e 00EB0340 		add	r0, r0, r3, lsl #16
+ 417              		.loc 1 110 72 view .LVU111
+ 418 0052 9DF81630 		ldrb	r3, [sp, #22]	@ zero_extendqisi2
+ 419              		.loc 1 110 63 view .LVU112
+ 420 0056 1844     		add	r0, r0, r3
+ 421              	.LVL10:
+ 111:SensorDrivers/Src/BMP180.c **** 	return up;
+ 422              		.loc 1 111 2 is_stmt 1 view .LVU113
+ 112:SensorDrivers/Src/BMP180.c **** }
+ 423              		.loc 1 112 1 is_stmt 0 view .LVU114
+ 424 0058 C009     		lsrs	r0, r0, #7
+ 425              	.LVL11:
+ 426              		.loc 1 112 1 view .LVU115
+ 427 005a 06B0     		add	sp, sp, #24
+ 428              		.cfi_def_cfa_offset 16
+ 429              		@ sp needed
+ 430 005c 70BD     		pop	{r4, r5, r6, pc}
+ 431              	.L15:
+ 432 005e 00BF     		.align	2
+ 433              	.L14:
+ 434 0060 00000000 		.word	hi2c1
+ 435              		.cfi_endproc
+ 436              	.LFE133:
+ 438              		.section	.text.get_press,"ax",%progbits
+ 439              		.align	1
+ 440              		.global	get_press
+ 441              		.syntax unified
+ 442              		.thumb
+ 443              		.thumb_func
+ 445              	get_press:
+ 446              	.LFB134:
+ 113:SensorDrivers/Src/BMP180.c **** 
+ 114:SensorDrivers/Src/BMP180.c **** 
+ 115:SensorDrivers/Src/BMP180.c **** 
+ 116:SensorDrivers/Src/BMP180.c **** long get_press(void) {
+ 447              		.loc 1 116 22 is_stmt 1 view -0
+ 448              		.cfi_startproc
+ 449              		@ args = 0, pretend = 0, frame = 0
+ 450              		@ frame_needed = 0, uses_anonymous_args = 0
+ 451 0000 10B5     		push	{r4, lr}
+ 452              		.cfi_def_cfa_offset 8
+ 453              		.cfi_offset 4, -8
+ 454              		.cfi_offset 14, -4
+ 117:SensorDrivers/Src/BMP180.c ****     long p;
+ 455              		.loc 1 117 5 view .LVU117
+ 118:SensorDrivers/Src/BMP180.c ****     B6 = B5 - 4000;
+ 456              		.loc 1 118 5 view .LVU118
+ 457              		.loc 1 118 13 is_stmt 0 view .LVU119
+ 458 0002 374B     		ldr	r3, .L20
+ 459 0004 1968     		ldr	r1, [r3]
+ 460 0006 A1F57A61 		sub	r1, r1, #4000
+ 461              		.loc 1 118 8 view .LVU120
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 11
+
+
+ 462 000a 364B     		ldr	r3, .L20+4
+ 463 000c 1960     		str	r1, [r3]
+ 119:SensorDrivers/Src/BMP180.c **** 
+ 120:SensorDrivers/Src/BMP180.c ****     X1 = (B2 * ((B6 * B6) >> 12)) >> 11;
+ 464              		.loc 1 120 5 is_stmt 1 view .LVU121
+ 465              		.loc 1 120 21 is_stmt 0 view .LVU122
+ 466 000e 01FB01FC 		mul	ip, r1, r1
+ 467              		.loc 1 120 27 view .LVU123
+ 468 0012 4FEA2C3C 		asr	ip, ip, #12
+ 469              		.loc 1 120 14 view .LVU124
+ 470 0016 344B     		ldr	r3, .L20+8
+ 471 0018 B3F90030 		ldrsh	r3, [r3]
+ 472 001c 0CFB03F3 		mul	r3, ip, r3
+ 473              		.loc 1 120 35 view .LVU125
+ 474 0020 DB12     		asrs	r3, r3, #11
+ 475              		.loc 1 120 8 view .LVU126
+ 476 0022 324C     		ldr	r4, .L20+12
+ 477 0024 2360     		str	r3, [r4]
+ 121:SensorDrivers/Src/BMP180.c ****     X2 = (AC2 * B6) >> 11;
+ 478              		.loc 1 121 5 is_stmt 1 view .LVU127
+ 479              		.loc 1 121 15 is_stmt 0 view .LVU128
+ 480 0026 324A     		ldr	r2, .L20+16
+ 481 0028 B2F90020 		ldrsh	r2, [r2]
+ 482 002c 01FB02F2 		mul	r2, r1, r2
+ 483              		.loc 1 121 21 view .LVU129
+ 484 0030 D212     		asrs	r2, r2, #11
+ 485              		.loc 1 121 8 view .LVU130
+ 486 0032 DFF8E8E0 		ldr	lr, .L20+60
+ 487 0036 CEF80020 		str	r2, [lr]
+ 122:SensorDrivers/Src/BMP180.c ****     X3 = X1 + X2;
+ 488              		.loc 1 122 5 is_stmt 1 view .LVU131
+ 489              		.loc 1 122 13 is_stmt 0 view .LVU132
+ 490 003a 1344     		add	r3, r3, r2
+ 491              		.loc 1 122 8 view .LVU133
+ 492 003c 2D48     		ldr	r0, .L20+20
+ 493 003e 0360     		str	r3, [r0]
+ 123:SensorDrivers/Src/BMP180.c ****     B3 = ((((int32_t)AC1 * 4 + X3) << OSS) + 2) >> 2;
+ 494              		.loc 1 123 5 is_stmt 1 view .LVU134
+ 495              		.loc 1 123 13 is_stmt 0 view .LVU135
+ 496 0040 2D4A     		ldr	r2, .L20+24
+ 497 0042 B2F90020 		ldrsh	r2, [r2]
+ 498              		.loc 1 123 30 view .LVU136
+ 499 0046 03EB8203 		add	r3, r3, r2, lsl #2
+ 500              		.loc 1 123 36 view .LVU137
+ 501 004a 5B00     		lsls	r3, r3, #1
+ 502              		.loc 1 123 44 view .LVU138
+ 503 004c 0233     		adds	r3, r3, #2
+ 504              		.loc 1 123 49 view .LVU139
+ 505 004e 9B10     		asrs	r3, r3, #2
+ 506              		.loc 1 123 8 view .LVU140
+ 507 0050 2A4A     		ldr	r2, .L20+28
+ 508 0052 1360     		str	r3, [r2]
+ 124:SensorDrivers/Src/BMP180.c **** 
+ 125:SensorDrivers/Src/BMP180.c ****     X1 = (AC3 * B6) >> 13;
+ 509              		.loc 1 125 5 is_stmt 1 view .LVU141
+ 510              		.loc 1 125 15 is_stmt 0 view .LVU142
+ 511 0054 2A4A     		ldr	r2, .L20+32
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 12
+
+
+ 512 0056 B2F90020 		ldrsh	r2, [r2]
+ 513 005a 01FB02F2 		mul	r2, r1, r2
+ 514              		.loc 1 125 21 view .LVU143
+ 515 005e 5213     		asrs	r2, r2, #13
+ 516              		.loc 1 125 8 view .LVU144
+ 517 0060 2260     		str	r2, [r4]
+ 126:SensorDrivers/Src/BMP180.c ****     X2 = (B1 * ((B6 * B6) >> 12)) >> 16;
+ 518              		.loc 1 126 5 is_stmt 1 view .LVU145
+ 519              		.loc 1 126 14 is_stmt 0 view .LVU146
+ 520 0062 2849     		ldr	r1, .L20+36
+ 521 0064 B1F90010 		ldrsh	r1, [r1]
+ 522 0068 0CFB01F1 		mul	r1, ip, r1
+ 523              		.loc 1 126 35 view .LVU147
+ 524 006c 0914     		asrs	r1, r1, #16
+ 525              		.loc 1 126 8 view .LVU148
+ 526 006e CEF80010 		str	r1, [lr]
+ 127:SensorDrivers/Src/BMP180.c ****     X3 = ((X1 + X2) + 2) >> 2;
+ 527              		.loc 1 127 5 is_stmt 1 view .LVU149
+ 528              		.loc 1 127 15 is_stmt 0 view .LVU150
+ 529 0072 0A44     		add	r2, r2, r1
+ 530              		.loc 1 127 21 view .LVU151
+ 531 0074 0232     		adds	r2, r2, #2
+ 532              		.loc 1 127 26 view .LVU152
+ 533 0076 9210     		asrs	r2, r2, #2
+ 534              		.loc 1 127 8 view .LVU153
+ 535 0078 0260     		str	r2, [r0]
+ 128:SensorDrivers/Src/BMP180.c **** 
+ 129:SensorDrivers/Src/BMP180.c ****     B4 = (AC4 * (uint32_t)(X3 + 32768)) >> 15;
+ 536              		.loc 1 129 5 is_stmt 1 view .LVU154
+ 537              		.loc 1 129 31 is_stmt 0 view .LVU155
+ 538 007a 02F50042 		add	r2, r2, #32768
+ 539              		.loc 1 129 15 view .LVU156
+ 540 007e 2249     		ldr	r1, .L20+40
+ 541 0080 0988     		ldrh	r1, [r1]
+ 542 0082 01FB02F2 		mul	r2, r1, r2
+ 543              		.loc 1 129 41 view .LVU157
+ 544 0086 D20B     		lsrs	r2, r2, #15
+ 545              		.loc 1 129 8 view .LVU158
+ 546 0088 2049     		ldr	r1, .L20+44
+ 547 008a 0A60     		str	r2, [r1]
+ 130:SensorDrivers/Src/BMP180.c ****     B7 = ((uint32_t)UP - B3) * (5000 >> OSS);
+ 548              		.loc 1 130 5 is_stmt 1 view .LVU159
+ 549              		.loc 1 130 11 is_stmt 0 view .LVU160
+ 550 008c 2049     		ldr	r1, .L20+48
+ 551 008e 0868     		ldr	r0, [r1]
+ 552              		.loc 1 130 24 view .LVU161
+ 553 0090 C01A     		subs	r0, r0, r3
+ 554              		.loc 1 130 30 view .LVU162
+ 555 0092 40F6C413 		movw	r3, #2500
+ 556 0096 03FB00F0 		mul	r0, r3, r0
+ 557              		.loc 1 130 8 view .LVU163
+ 558 009a 1E4B     		ldr	r3, .L20+52
+ 559 009c 1860     		str	r0, [r3]
+ 131:SensorDrivers/Src/BMP180.c **** 
+ 132:SensorDrivers/Src/BMP180.c ****     if (B7 < 0x80000000)
+ 560              		.loc 1 132 5 is_stmt 1 view .LVU164
+ 561              		.loc 1 132 8 is_stmt 0 view .LVU165
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 13
+
+
+ 562 009e 0028     		cmp	r0, #0
+ 563 00a0 19DB     		blt	.L17
+ 133:SensorDrivers/Src/BMP180.c ****         p = (B7 << 1) / B4;
+ 564              		.loc 1 133 9 is_stmt 1 view .LVU166
+ 565              		.loc 1 133 17 is_stmt 0 view .LVU167
+ 566 00a2 4000     		lsls	r0, r0, #1
+ 567              		.loc 1 133 23 view .LVU168
+ 568 00a4 B0FBF2F0 		udiv	r0, r0, r2
+ 569              	.LVL12:
+ 570              	.L18:
+ 134:SensorDrivers/Src/BMP180.c ****     else
+ 135:SensorDrivers/Src/BMP180.c ****         p = (B7 / B4) << 1;
+ 136:SensorDrivers/Src/BMP180.c **** 
+ 137:SensorDrivers/Src/BMP180.c ****     X1 = (p >> 8) * (p >> 8);
+ 571              		.loc 1 137 5 is_stmt 1 view .LVU169
+ 572              		.loc 1 137 13 is_stmt 0 view .LVU170
+ 573 00a8 0312     		asrs	r3, r0, #8
+ 574              		.loc 1 137 19 view .LVU171
+ 575 00aa 03FB03F3 		mul	r3, r3, r3
+ 576              		.loc 1 137 8 view .LVU172
+ 577 00ae 0F4A     		ldr	r2, .L20+12
+ 578 00b0 1360     		str	r3, [r2]
+ 138:SensorDrivers/Src/BMP180.c ****     X1 = (X1 * 3038) >> 16;
+ 579              		.loc 1 138 5 is_stmt 1 view .LVU173
+ 580              		.loc 1 138 14 is_stmt 0 view .LVU174
+ 581 00b2 40F6DE31 		movw	r1, #3038
+ 582 00b6 01FB03F3 		mul	r3, r1, r3
+ 583              		.loc 1 138 22 view .LVU175
+ 584 00ba 1B14     		asrs	r3, r3, #16
+ 585              		.loc 1 138 8 view .LVU176
+ 586 00bc 1360     		str	r3, [r2]
+ 139:SensorDrivers/Src/BMP180.c ****     X2 = (-7357 * p) >> 16;
+ 587              		.loc 1 139 5 is_stmt 1 view .LVU177
+ 588              		.loc 1 139 17 is_stmt 0 view .LVU178
+ 589 00be 164A     		ldr	r2, .L20+56
+ 590 00c0 00FB02F2 		mul	r2, r0, r2
+ 591              		.loc 1 139 22 view .LVU179
+ 592 00c4 1214     		asrs	r2, r2, #16
+ 593              		.loc 1 139 8 view .LVU180
+ 594 00c6 1549     		ldr	r1, .L20+60
+ 595 00c8 0A60     		str	r2, [r1]
+ 140:SensorDrivers/Src/BMP180.c ****     p = p + ((X1 + X2 + 3791) >> 4);
+ 596              		.loc 1 140 5 is_stmt 1 view .LVU181
+ 597              		.loc 1 140 18 is_stmt 0 view .LVU182
+ 598 00ca 1344     		add	r3, r3, r2
+ 599              		.loc 1 140 23 view .LVU183
+ 600 00cc 03F6CF63 		addw	r3, r3, #3791
+ 601              	.LVL13:
+ 141:SensorDrivers/Src/BMP180.c **** 
+ 142:SensorDrivers/Src/BMP180.c ****     return p;  // pascal
+ 602              		.loc 1 142 5 is_stmt 1 view .LVU184
+ 143:SensorDrivers/Src/BMP180.c **** }
+ 603              		.loc 1 143 1 is_stmt 0 view .LVU185
+ 604 00d0 00EB2310 		add	r0, r0, r3, asr #4
+ 605              	.LVL14:
+ 606              		.loc 1 143 1 view .LVU186
+ 607 00d4 10BD     		pop	{r4, pc}
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 14
+
+
+ 608              	.LVL15:
+ 609              	.L17:
+ 135:SensorDrivers/Src/BMP180.c **** 
+ 610              		.loc 1 135 9 is_stmt 1 view .LVU187
+ 135:SensorDrivers/Src/BMP180.c **** 
+ 611              		.loc 1 135 17 is_stmt 0 view .LVU188
+ 612 00d6 B0FBF2F0 		udiv	r0, r0, r2
+ 135:SensorDrivers/Src/BMP180.c **** 
+ 613              		.loc 1 135 11 view .LVU189
+ 614 00da 4000     		lsls	r0, r0, #1
+ 615 00dc E4E7     		b	.L18
+ 616              	.L21:
+ 617 00de 00BF     		.align	2
+ 618              	.L20:
+ 619 00e0 00000000 		.word	B5
+ 620 00e4 00000000 		.word	B6
+ 621 00e8 00000000 		.word	B2
+ 622 00ec 00000000 		.word	X1
+ 623 00f0 00000000 		.word	AC2
+ 624 00f4 00000000 		.word	X3
+ 625 00f8 00000000 		.word	AC1
+ 626 00fc 00000000 		.word	B3
+ 627 0100 00000000 		.word	AC3
+ 628 0104 00000000 		.word	B1
+ 629 0108 00000000 		.word	AC4
+ 630 010c 00000000 		.word	B4
+ 631 0110 00000000 		.word	UP
+ 632 0114 00000000 		.word	B7
+ 633 0118 43E3FFFF 		.word	-7357
+ 634 011c 00000000 		.word	X2
+ 635              		.cfi_endproc
+ 636              	.LFE134:
+ 638              		.global	calib_data
+ 639              		.section	.bss.calib_data,"aw",%nobits
+ 640              		.align	2
+ 643              	calib_data:
+ 644 0000 00000000 		.space	22
+ 644      00000000 
+ 644      00000000 
+ 644      00000000 
+ 644      00000000 
+ 645              		.global	B7
+ 646              		.section	.bss.B7,"aw",%nobits
+ 647              		.align	2
+ 650              	B7:
+ 651 0000 00000000 		.space	4
+ 652              		.global	B6
+ 653              		.section	.bss.B6,"aw",%nobits
+ 654              		.align	2
+ 657              	B6:
+ 658 0000 00000000 		.space	4
+ 659              		.global	B4
+ 660              		.section	.bss.B4,"aw",%nobits
+ 661              		.align	2
+ 664              	B4:
+ 665 0000 00000000 		.space	4
+ 666              		.global	B5
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 15
+
+
+ 667              		.section	.bss.B5,"aw",%nobits
+ 668              		.align	2
+ 671              	B5:
+ 672 0000 00000000 		.space	4
+ 673              		.global	B3
+ 674              		.section	.bss.B3,"aw",%nobits
+ 675              		.align	2
+ 678              	B3:
+ 679 0000 00000000 		.space	4
+ 680              		.global	X3
+ 681              		.section	.bss.X3,"aw",%nobits
+ 682              		.align	2
+ 685              	X3:
+ 686 0000 00000000 		.space	4
+ 687              		.global	X2
+ 688              		.section	.bss.X2,"aw",%nobits
+ 689              		.align	2
+ 692              	X2:
+ 693 0000 00000000 		.space	4
+ 694              		.global	X1
+ 695              		.section	.bss.X1,"aw",%nobits
+ 696              		.align	2
+ 699              	X1:
+ 700 0000 00000000 		.space	4
+ 701              		.global	UP
+ 702              		.section	.bss.UP,"aw",%nobits
+ 703              		.align	2
+ 706              	UP:
+ 707 0000 00000000 		.space	4
+ 708              		.global	UT
+ 709              		.section	.bss.UT,"aw",%nobits
+ 710              		.align	2
+ 713              	UT:
+ 714 0000 00000000 		.space	4
+ 715              		.global	MD
+ 716              		.section	.bss.MD,"aw",%nobits
+ 717              		.align	1
+ 720              	MD:
+ 721 0000 0000     		.space	2
+ 722              		.global	MC
+ 723              		.section	.bss.MC,"aw",%nobits
+ 724              		.align	1
+ 727              	MC:
+ 728 0000 0000     		.space	2
+ 729              		.global	MB
+ 730              		.section	.bss.MB,"aw",%nobits
+ 731              		.align	1
+ 734              	MB:
+ 735 0000 0000     		.space	2
+ 736              		.global	B2
+ 737              		.section	.bss.B2,"aw",%nobits
+ 738              		.align	1
+ 741              	B2:
+ 742 0000 0000     		.space	2
+ 743              		.global	B1
+ 744              		.section	.bss.B1,"aw",%nobits
+ 745              		.align	1
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 16
+
+
+ 748              	B1:
+ 749 0000 0000     		.space	2
+ 750              		.global	AC6
+ 751              		.section	.bss.AC6,"aw",%nobits
+ 752              		.align	1
+ 755              	AC6:
+ 756 0000 0000     		.space	2
+ 757              		.global	AC5
+ 758              		.section	.bss.AC5,"aw",%nobits
+ 759              		.align	1
+ 762              	AC5:
+ 763 0000 0000     		.space	2
+ 764              		.global	AC4
+ 765              		.section	.bss.AC4,"aw",%nobits
+ 766              		.align	1
+ 769              	AC4:
+ 770 0000 0000     		.space	2
+ 771              		.global	AC3
+ 772              		.section	.bss.AC3,"aw",%nobits
+ 773              		.align	1
+ 776              	AC3:
+ 777 0000 0000     		.space	2
+ 778              		.global	AC2
+ 779              		.section	.bss.AC2,"aw",%nobits
+ 780              		.align	1
+ 783              	AC2:
+ 784 0000 0000     		.space	2
+ 785              		.global	AC1
+ 786              		.section	.bss.AC1,"aw",%nobits
+ 787              		.align	1
+ 790              	AC1:
+ 791 0000 0000     		.space	2
+ 792              		.text
+ 793              	.Letext0:
+ 794              		.file 2 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/machine/_defa
+ 795              		.file 3 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/sys/_stdint.h
+ 796              		.file 4 "Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f303xe.h"
+ 797              		.file 5 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_def.h"
+ 798              		.file 6 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dma.h"
+ 799              		.file 7 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_i2c.h"
+ 800              		.file 8 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h"
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 BMP180.c
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:21     .text.read_calib_data:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:27     .text.read_calib_data:00000000 read_calib_data
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:170    .text.read_calib_data:000000a8 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:643    .bss.calib_data:00000000 calib_data
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:790    .bss.AC1:00000000 AC1
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:783    .bss.AC2:00000000 AC2
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:776    .bss.AC3:00000000 AC3
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:769    .bss.AC4:00000000 AC4
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:762    .bss.AC5:00000000 AC5
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:755    .bss.AC6:00000000 AC6
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:748    .bss.B1:00000000 B1
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:741    .bss.B2:00000000 B2
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:734    .bss.MB:00000000 MB
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:727    .bss.MC:00000000 MC
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:720    .bss.MD:00000000 MD
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:187    .text.get_ut:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:193    .text.get_ut:00000000 get_ut
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:264    .text.get_ut:0000005c $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:269    .text.get_temp:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:275    .text.get_temp:00000000 get_temp
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:340    .text.get_temp:0000004c $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:713    .bss.UT:00000000 UT
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:699    .bss.X1:00000000 X1
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:692    .bss.X2:00000000 X2
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:671    .bss.B5:00000000 B5
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:352    .text.get_up:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:358    .text.get_up:00000000 get_up
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:434    .text.get_up:00000060 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:439    .text.get_press:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:445    .text.get_press:00000000 get_press
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:619    .text.get_press:000000e0 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:657    .bss.B6:00000000 B6
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:685    .bss.X3:00000000 X3
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:678    .bss.B3:00000000 B3
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:664    .bss.B4:00000000 B4
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:706    .bss.UP:00000000 UP
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:650    .bss.B7:00000000 B7
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:640    .bss.calib_data:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:647    .bss.B7:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:654    .bss.B6:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:661    .bss.B4:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:668    .bss.B5:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:675    .bss.B3:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:682    .bss.X3:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:689    .bss.X2:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:696    .bss.X1:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:703    .bss.UP:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:710    .bss.UT:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:717    .bss.MD:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:724    .bss.MC:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:731    .bss.MB:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:738    .bss.B2:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:745    .bss.B1:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:752    .bss.AC6:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:759    .bss.AC5:00000000 $d
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s 			page 18
+
+
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:766    .bss.AC4:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:773    .bss.AC3:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:780    .bss.AC2:00000000 $d
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc0tBfng.s:787    .bss.AC1:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_I2C_Mem_Read
+hi2c1
+HAL_I2C_Mem_Write
+HAL_Delay

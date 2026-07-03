@@ -1,0 +1,215 @@
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc5BB3h4.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"MICS-4514.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "SensorDrivers/Src/MICS-4514.c"
+  20              		.section	.text.Read_NO2,"ax",%progbits
+  21              		.align	1
+  22              		.global	Read_NO2
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	Read_NO2:
+  28              	.LFB130:
+   1:SensorDrivers/Src/MICS-4514.c **** /*
+   2:SensorDrivers/Src/MICS-4514.c ****  * MICS-4514.c
+   3:SensorDrivers/Src/MICS-4514.c ****  *
+   4:SensorDrivers/Src/MICS-4514.c ****  *  Created on: May 10, 2025
+   5:SensorDrivers/Src/MICS-4514.c ****  *      Author: ALPEREN
+   6:SensorDrivers/Src/MICS-4514.c ****  */
+   7:SensorDrivers/Src/MICS-4514.c **** 
+   8:SensorDrivers/Src/MICS-4514.c **** #include "MICS-4514.h"
+   9:SensorDrivers/Src/MICS-4514.c **** 
+  10:SensorDrivers/Src/MICS-4514.c **** extern I2C_HandleTypeDef hi2c1;
+  11:SensorDrivers/Src/MICS-4514.c **** 
+  12:SensorDrivers/Src/MICS-4514.c **** float Read_NO2 () {
+  29              		.loc 1 12 19 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 16
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 30B5     		push	{r4, r5, lr}
+  34              		.cfi_def_cfa_offset 12
+  35              		.cfi_offset 4, -12
+  36              		.cfi_offset 5, -8
+  37              		.cfi_offset 14, -4
+  38 0002 87B0     		sub	sp, sp, #28
+  39              		.cfi_def_cfa_offset 40
+  13:SensorDrivers/Src/MICS-4514.c **** 
+  14:SensorDrivers/Src/MICS-4514.c **** 	uint8_t ox_data[6], reg;
+  40              		.loc 1 14 2 view .LVU1
+  15:SensorDrivers/Src/MICS-4514.c **** 	uint8_t tx_buf[2] = {POWER_MODE_REGISTER, WAKE_UP_MODE};
+  41              		.loc 1 15 2 view .LVU2
+  42              		.loc 1 15 10 is_stmt 0 view .LVU3
+  43 0004 4FF48573 		mov	r3, #266
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc5BB3h4.s 			page 2
+
+
+  44 0008 ADF80C30 		strh	r3, [sp, #12]	@ movhi
+  16:SensorDrivers/Src/MICS-4514.c **** 	uint16_t oxADC, powerADC, Rs;
+  45              		.loc 1 16 2 is_stmt 1 view .LVU4
+  17:SensorDrivers/Src/MICS-4514.c **** 	float ppm;
+  46              		.loc 1 17 2 view .LVU5
+  18:SensorDrivers/Src/MICS-4514.c **** 
+  19:SensorDrivers/Src/MICS-4514.c **** 	reg = OX_REGISTER_HIGH;
+  47              		.loc 1 19 2 view .LVU6
+  48              		.loc 1 19 6 is_stmt 0 view .LVU7
+  49 000c 0423     		movs	r3, #4
+  50 000e 8DF80F30 		strb	r3, [sp, #15]
+  20:SensorDrivers/Src/MICS-4514.c **** 	HAL_I2C_Master_Transmit(&hi2c1, MICS_4514_ADDRESS, tx_buf, 2, HAL_MAX_DELAY);
+  51              		.loc 1 20 2 is_stmt 1 view .LVU8
+  52 0012 274C     		ldr	r4, .L3+16
+  53 0014 4FF0FF35 		mov	r5, #-1
+  54 0018 0095     		str	r5, [sp]
+  55 001a 0223     		movs	r3, #2
+  56 001c 03AA     		add	r2, sp, #12
+  57 001e EA21     		movs	r1, #234
+  58 0020 2046     		mov	r0, r4
+  59 0022 FFF7FEFF 		bl	HAL_I2C_Master_Transmit
+  60              	.LVL0:
+  21:SensorDrivers/Src/MICS-4514.c **** 
+  22:SensorDrivers/Src/MICS-4514.c ****     HAL_I2C_Master_Transmit(&hi2c1, MICS_4514_ADDRESS, &reg, 1, HAL_MAX_DELAY);
+  61              		.loc 1 22 5 view .LVU9
+  62 0026 0095     		str	r5, [sp]
+  63 0028 0123     		movs	r3, #1
+  64 002a 0DF10F02 		add	r2, sp, #15
+  65 002e EA21     		movs	r1, #234
+  66 0030 2046     		mov	r0, r4
+  67 0032 FFF7FEFF 		bl	HAL_I2C_Master_Transmit
+  68              	.LVL1:
+  23:SensorDrivers/Src/MICS-4514.c ****     HAL_Delay(200);
+  69              		.loc 1 23 5 view .LVU10
+  70 0036 C820     		movs	r0, #200
+  71 0038 FFF7FEFF 		bl	HAL_Delay
+  72              	.LVL2:
+  24:SensorDrivers/Src/MICS-4514.c **** 	HAL_I2C_Master_Receive(&hi2c1, MICS_4514_ADDRESS, ox_data, 6, HAL_MAX_DELAY);
+  73              		.loc 1 24 2 view .LVU11
+  74 003c 0095     		str	r5, [sp]
+  75 003e 0623     		movs	r3, #6
+  76 0040 04AA     		add	r2, sp, #16
+  77 0042 EA21     		movs	r1, #234
+  78 0044 2046     		mov	r0, r4
+  79 0046 FFF7FEFF 		bl	HAL_I2C_Master_Receive
+  80              	.LVL3:
+  25:SensorDrivers/Src/MICS-4514.c **** 
+  26:SensorDrivers/Src/MICS-4514.c **** 	oxADC = ((uint16_t)ox_data[0]<<8) | (uint16_t)ox_data[1];
+  81              		.loc 1 26 2 view .LVU12
+  82              		.loc 1 26 28 is_stmt 0 view .LVU13
+  83 004a 9DF81030 		ldrb	r3, [sp, #16]	@ zero_extendqisi2
+  84              		.loc 1 26 55 view .LVU14
+  85 004e 9DF81120 		ldrb	r2, [sp, #17]	@ zero_extendqisi2
+  86              		.loc 1 26 8 view .LVU15
+  87 0052 42EA0322 		orr	r2, r2, r3, lsl #8
+  88              	.LVL4:
+  27:SensorDrivers/Src/MICS-4514.c **** 	powerADC = ((uint16_t)ox_data[4]<<8) | (uint16_t)ox_data[5];
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc5BB3h4.s 			page 3
+
+
+  89              		.loc 1 27 2 is_stmt 1 view .LVU16
+  90              		.loc 1 27 31 is_stmt 0 view .LVU17
+  91 0056 9DF81410 		ldrb	r1, [sp, #20]	@ zero_extendqisi2
+  92              		.loc 1 27 58 view .LVU18
+  93 005a 9DF81530 		ldrb	r3, [sp, #21]	@ zero_extendqisi2
+  94              		.loc 1 27 11 view .LVU19
+  95 005e 43EA0123 		orr	r3, r3, r1, lsl #8
+  96              	.LVL5:
+  28:SensorDrivers/Src/MICS-4514.c **** 
+  29:SensorDrivers/Src/MICS-4514.c ****     Rs = powerADC - oxADC;
+  97              		.loc 1 29 5 is_stmt 1 view .LVU20
+  98              		.loc 1 29 8 is_stmt 0 view .LVU21
+  99 0062 9B1A     		subs	r3, r3, r2
+ 100              	.LVL6:
+ 101              		.loc 1 29 8 view .LVU22
+ 102 0064 9BB2     		uxth	r3, r3
+ 103              	.LVL7:
+  30:SensorDrivers/Src/MICS-4514.c ****     ppm = ((float)Rs / (float)NO2_R0 - 0.045) / 6.13;
+ 104              		.loc 1 30 5 is_stmt 1 view .LVU23
+ 105              		.loc 1 30 12 is_stmt 0 view .LVU24
+ 106 0066 07EE903A 		vmov	s15, r3	@ int
+ 107 006a F8EE677A 		vcvt.f32.u32	s15, s15
+ 108              		.loc 1 30 22 view .LVU25
+ 109 006e 9FED117A 		vldr.32	s14, .L3+20
+ 110 0072 C7EE877A 		vdiv.f32	s15, s15, s14
+ 111 0076 17EE900A 		vmov	r0, s15
+ 112 007a FFF7FEFF 		bl	__aeabi_f2d
+ 113              	.LVL8:
+ 114              		.loc 1 30 38 view .LVU26
+ 115 007e 08A3     		adr	r3, .L3
+ 116 0080 D3E90023 		ldrd	r2, [r3]
+ 117 0084 FFF7FEFF 		bl	__aeabi_dsub
+ 118              	.LVL9:
+ 119              		.loc 1 30 47 view .LVU27
+ 120 0088 07A3     		adr	r3, .L3+8
+ 121 008a D3E90023 		ldrd	r2, [r3]
+ 122 008e FFF7FEFF 		bl	__aeabi_ddiv
+ 123              	.LVL10:
+ 124              		.loc 1 30 9 view .LVU28
+ 125 0092 FFF7FEFF 		bl	__aeabi_d2f
+ 126              	.LVL11:
+  31:SensorDrivers/Src/MICS-4514.c **** 
+  32:SensorDrivers/Src/MICS-4514.c ****     return ppm;
+ 127              		.loc 1 32 5 is_stmt 1 view .LVU29
+  33:SensorDrivers/Src/MICS-4514.c **** }
+ 128              		.loc 1 33 1 is_stmt 0 view .LVU30
+ 129 0096 00EE100A 		vmov	s0, r0
+ 130 009a 07B0     		add	sp, sp, #28
+ 131              		.cfi_def_cfa_offset 12
+ 132              		@ sp needed
+ 133 009c 30BD     		pop	{r4, r5, pc}
+ 134              	.L4:
+ 135 009e 00BF     		.align	3
+ 136              	.L3:
+ 137 00a0 0AD7A370 		.word	1889785610
+ 138 00a4 3D0AA73F 		.word	1067911741
+ 139 00a8 85EB51B8 		.word	-1202590843
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc5BB3h4.s 			page 4
+
+
+ 140 00ac 1E851840 		.word	1075348766
+ 141 00b0 00000000 		.word	hi2c1
+ 142 00b4 00C03744 		.word	1144504320
+ 143              		.cfi_endproc
+ 144              	.LFE130:
+ 146              		.text
+ 147              	.Letext0:
+ 148              		.file 2 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/machine/_defa
+ 149              		.file 3 "/Applications/ArmGNUToolchain/15.2.rel1/arm-none-eabi/arm-none-eabi/include/sys/_stdint.h
+ 150              		.file 4 "Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f303xe.h"
+ 151              		.file 5 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_def.h"
+ 152              		.file 6 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dma.h"
+ 153              		.file 7 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_i2c.h"
+ 154              		.file 8 "Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h"
+ARM GAS  /var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc5BB3h4.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 MICS-4514.c
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc5BB3h4.s:21     .text.Read_NO2:00000000 $t
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc5BB3h4.s:27     .text.Read_NO2:00000000 Read_NO2
+/var/folders/c5/zmqxb8b93d5299jd32lsj8h00000gn/T//cc5BB3h4.s:137    .text.Read_NO2:000000a0 $d
+
+UNDEFINED SYMBOLS
+HAL_I2C_Master_Transmit
+HAL_Delay
+HAL_I2C_Master_Receive
+__aeabi_f2d
+__aeabi_dsub
+__aeabi_ddiv
+__aeabi_d2f
+hi2c1

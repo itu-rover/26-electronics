@@ -11,9 +11,9 @@
 #include "stm32f3xx.h"
 
 #define MQ135_ADC_MAX_VALUE		4095.0
-#define MQ135_RL				1		//Load Resistor (?)
-#define MQ135_R0				4.5
-#define MQ135_ADC_VREF			5
+#define MQ135_RL				10000.0f		//Load Resistor (?)
+#define MQ135_R0				9685.6f
+#define MQ135_ADC_VREF			3.3f
 
 float Read_NH3 ();
 

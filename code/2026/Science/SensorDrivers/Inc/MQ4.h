@@ -16,10 +16,10 @@
 #include "stm32f3xx.h"
 
 
-#define MQ4_ADC_MAX_VALUE			4095
-#define MQ4_RL					    4.7      //(?)
-#define MQ4_R0					    32
-#define MQ4_ADC_VREF				5
+#define MQ4_ADC_MAX_VALUE			4095.0f
+#define MQ4_RL					    4700.0f      //(?)
+#define MQ4_R0					    472.8f //460 - 490 (RS0)
+#define MQ4_ADC_VREF				3.3f
 #define CH4_BUFF_SIZE				1
 
 
