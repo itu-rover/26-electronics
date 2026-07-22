@@ -29,6 +29,7 @@
 #include "MICS-4514.h"		//NO2
 #include "DTH11.h"			//Temp&Humidity
 #include "BMP_180.h"		//Pressure
+#include "soil-sensor.h" 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -73,7 +74,7 @@ float temp;
 extern long UT;
 extern long UP;
 
-char data_buff [128];
+char data_buff [256];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -181,13 +182,69 @@ int main(void)
 	  temp = get_temp();
 	  press= get_press() * 10 * 50;
 
-	  snprintf(data_buff, sizeof(data_buff), "%f %f %f %f %f %u %ld",
-		CO2, NH3, CH4, NO2, DHT_temp, RhByteInt, press);
+    // CO2: 3 decimal places
+    uint32_t CO2_whole = (uint32_t) CO2;
+    uint32_t CO2_decimal = (uint32_t)((CO2 - CO2_whole) * 1000);
 
-	  HAL_UART_Transmit(&huart5, (uint8_t*)data_buff, strlen(data_buff), HAL_MAX_DELAY);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)data_buff, strlen(data_buff), HAL_MAX_DELAY);
+    // Gases: 5 decimal places
+    uint32_t NH3_whole = (uint32_t) NH3;
+    uint32_t NH3_decimal = (uint32_t)((NH3 - NH3_whole) * 100000);
 
-	  HAL_Delay(1500);
+    uint32_t CH4_whole = (uint32_t) CH4;
+    uint32_t CH4_decimal = (uint32_t)((CH4 - CH4_whole) * 100000);
+
+    uint32_t NO2_whole = (uint32_t) NO2;
+    uint32_t NO2_decimal = (uint32_t)((NO2 - NO2_whole) * 100000);
+
+    // Temperature: Signed (int32_t) to handle negative temperatures safely (not used)
+    // Note: We didn't use absolute value for the decimal portion so negative temps format correctly
+    uint32_t DHT_temp_whole = (uint32_t) DHT_temp;
+    uint32_t DHT_temp_decimal = (uint32_t)((DHT_temp - DHT_temp_whole) * 100000);
+
+    uint32_t Moisture_whole = (uint32_t) Moisture;
+    uint32_t Moisture_decimal = (uint32_t)((Moisture - Moisture_decimal) * 10);
+
+    uint32_t Temp_whole = (uint32_t) Temp;
+    uint32_t Temp_decimal = (uint32_t)((Temp - Temp_whole) * 10);
+
+    createRawSoilReading();
+    // Formatted string
+
+    /*
+    snprintf(data_buff, sizeof(data_buff), "CO2: %u.%03u NH3: %u.%05u CH4: %u.%05u NO2: %u.%05u Temp: %d.%05u RH: %u Press: %ld\n, Moisture: %u.%01u Soil_Temp: %u.%01u Cond: %ld\n",
+             CO2_whole, CO2_decimal,
+             NH3_whole, NH3_decimal,
+             CH4_whole, CH4_decimal,
+             NO2_whole, NO2_decimal,
+             DHT_temp_whole, DHT_temp_decimal,
+             RhByteInt, press,
+             Moisture_whole, Moisture_decimal,
+             Temp_whole, Temp_decimal,
+             Cond);
+    */
+
+snprintf(data_buff, sizeof(data_buff), "[%u.%03u,%u.%05u,%u.%05u,%u.%05u,%d.%05u,%u,%ld,%u.%01u,%u.%01u,%u,%u,%u]",
+         CO2_whole, CO2_decimal,
+         NH3_whole, NH3_decimal,
+         CH4_whole, CH4_decimal,
+         NO2_whole, NO2_decimal,
+         DHT_temp_whole, DHT_temp_decimal,
+         RhByteInt, 
+         press,
+         Temp_whole, Temp_decimal,
+         Moisture_whole, Moisture_decimal,
+         (unsigned int)(Cond * 0.18), // n
+         (unsigned int)(Cond * 0.04), // p
+         (unsigned int)(Cond * 0.23)); // k
+
+
+
+	  //HAL_UART_Transmit(&huart5, (uint8_t*)data_buff, strlen(data_buff), HAL_MAX_DELAY);
+	  HAL_UART_Transmit(&huart2, (uint8_t*)data_buff, sizeof(data_buff), HAL_MAX_DELAY); //strlen burayı aç!!
+
+    
+
+	  HAL_Delay(2000);
 
 
   }
@@ -564,7 +621,7 @@ static void MX_UART5_Init(void)
 
   /* USER CODE END UART5_Init 1 */
   huart5.Instance = UART5;
-  huart5.Init.BaudRate = 115200;
+  huart5.Init.BaudRate = 9600;
   huart5.Init.WordLength = UART_WORDLENGTH_8B;
   huart5.Init.StopBits = UART_STOPBITS_1;
   huart5.Init.Parity = UART_PARITY_NONE;
@@ -639,6 +696,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -651,6 +711,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PC10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PB4 */
   GPIO_InitStruct.Pin = GPIO_PIN_4;

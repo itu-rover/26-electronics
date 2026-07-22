@@ -104,7 +104,8 @@ SensorDrivers/Src/BMP180.c \
 SensorDrivers/Src/DTH11.c \
 SensorDrivers/Src/MICS-4514.c \
 SensorDrivers/Src/MQ135.c \
-SensorDrivers/Src/MQ4.c
+SensorDrivers/Src/MQ4.c \
+SensorDrivers/Src/soil-sensor.c
 
 
 CXX_SOURCES = \

@@ -31,7 +31,7 @@ build/debug/main.o: Core/Src/main.c Core/Inc/main.h \
  Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h \
  SensorDrivers/Inc/MQ135.h SensorDrivers/Inc/MQ4.h \
  SensorDrivers/Inc/MICS-4514.h SensorDrivers/Inc/DTH11.h \
- SensorDrivers/Inc/BMP_180.h
+ SensorDrivers/Inc/BMP_180.h SensorDrivers/Inc/soil-sensor.h
 Core/Inc/main.h:
 Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h:
 Core/Inc/stm32f3xx_hal_conf.h:
@@ -70,3 +70,4 @@ SensorDrivers/Inc/MQ4.h:
 SensorDrivers/Inc/MICS-4514.h:
 SensorDrivers/Inc/DTH11.h:
 SensorDrivers/Inc/BMP_180.h:
+SensorDrivers/Inc/soil-sensor.h:
